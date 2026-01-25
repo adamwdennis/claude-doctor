@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Diagnostic Report</title>
+  <style>
+    :root {
+      --bg: #1a1a2e;
+      --surface: #16213e;
+      --primary: #0f3460;
+      --accent: #e94560;
+      --text: #eee;
+      --text-dim: #888;
+      --success: #4ade80;
+      --warning: #fbbf24;
+      --error: #ef4444;
+      --info: #60a5fa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+    h1, h2, h3 { margin: 0 0 1rem; }
+    h1 { color: var(--accent); }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .card {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 {
+      border-bottom: 1px solid var(--primary);
+      padding-bottom: 0.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.5rem;
+      border-bottom: 1px solid var(--primary);
+    }
+    th { color: var(--text-dim); font-weight: 500; }
+    .status-enabled { color: var(--success); }
+    .status-disabled { color: var(--warning); }
+    .status-error { color: var(--error); }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .badge-success { background: var(--success); color: #000; }
+    .badge-warning { background: var(--warning); color: #000; }
+    .badge-error { background: var(--error); color: #fff; }
+    .badge-info { background: var(--info); color: #000; }
+    code {
+      background: var(--primary);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9em;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    pre {
+      background: var(--primary);
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    .dim { color: var(--text-dim); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .stat-box {
+      background: var(--primary);
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .stat-value { font-size: 2rem; font-weight: bold; color: var(--accent); }
+    .stat-label { color: var(--text-dim); font-size: 0.875rem; }
+    .issue-list { list-style: none; padding: 0; }
+    .issue-item { padding: 0.5rem 0; border-bottom: 1px solid var(--primary); }
+    footer { text-align: center; color: var(--text-dim); margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Claude Code Diagnostic Report</h1>
+    <p class="dim">Project: /Users/adamdennis/github/adamwdennis/claude-doctor | Generated: 2026-01-21T22:55:01.606Z</p>
+
+    <div class="card">
+      <h2>Settings Hierarchy</h2>
+      <table>
+        <thead>
+          <tr><th>Source</th><th>Path</th><th>Status</th><th>Keys</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td>Managed Policy</td>
+              <td><code>/etc/claude-code</code></td>
+              <td class="dim">Not found</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td>CLI Flags</td>
+              <td><code>N/A</code></td>
+              <td class="dim">Not found</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td>Project Local</td>
+              <td><code>/Users/adamdennis/github/adamwdennis/claude-doctor/.claude/settings.local.json</code></td>
+              <td class="status-enabled">Found</td>
+              <td>1</td>
+            </tr>
+          
+            <tr>
+              <td>Project Shared</td>
+              <td><code>/Users/adamdennis/github/adamwdennis/claude-doctor/.claude/settings.json</code></td>
+              <td class="dim">Not found</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td>User</td>
+              <td><code>/Users/adamdennis/.claude/settings.json</code></td>
+              <td class="status-enabled">Found</td>
+              <td>1</td>
+            </tr>
+          
+            <tr>
+              <td>Built-in Defaults</td>
+              <td><code>N/A</code></td>
+              <td class="status-enabled">Found</td>
+              <td>1</td>
+            </tr>
+          
+        </tbody>
+      </table>
+      
+        <h3>Merged Settings</h3>
+        <pre>{
+  &quot;enableBetaTools&quot;: false,
+  &quot;enabledPlugins&quot;: {
+    &quot;typescript-lsp@claude-plugins-official&quot;: true,
+    &quot;context7@claude-plugins-official&quot;: false,
+    &quot;serena@claude-plugins-official&quot;: false,
+    &quot;feature-dev@claude-plugins-official&quot;: true,
+    &quot;commit-commands@claude-plugins-official&quot;: true,
+    &quot;figma@claude-plugins-official&quot;: false,
+    &quot;explanatory-output-style@claude-plugins-official&quot;: false,
+    &quot;linear@claude-plugins-official&quot;: true,
+    &quot;hookify@claude-plugins-official&quot;: true,
+    &quot;greptile@claude-plugins-official&quot;: false,
+    &quot;gitlab@claude-plugins-official&quot;: true,
+    &quot;code-review@claude-plugins-official&quot;: true,
+    &quot;pr-review-toolkit@claude-plugins-official&quot;: true,
+    &quot;Notion@claude-plugins-official&quot;: false,
+    &quot;ralph-wiggum@claude-plugins-official&quot;: true,
+    &quot;ralph-loop@claude-plugins-official&quot;: true,
+    &quot;canvas@claude-canvas&quot;: false
+  },
+  &quot;permissions&quot;: {
+    &quot;allow&quot;: [
+      &quot;WebSearch&quot;,
+      &quot;Bash(xargs -I {} bash -c &#039;echo \&quot;\&quot;\&quot;\&quot;=== {} ===\&quot;\&quot;\&quot;\&quot; &amp;&amp; cat {}&#039;)&quot;,
+      &quot;Bash(npm test)&quot;,
+      &quot;Bash(npm run lint)&quot;,
+      &quot;Bash(npm run build:*)&quot;,
+      &quot;Bash(node:*)&quot;,
+      &quot;Bash(npm run lint:check:*)&quot;,
+      &quot;Bash(npm install)&quot;,
+      &quot;Bash(oxlint --help:*)&quot;,
+      &quot;Bash(npx oxlint --help:*)&quot;,
+      &quot;WebFetch(domain:tsdown.dev)&quot;,
+      &quot;Bash(npm info:*)&quot;,
+      &quot;Bash(npm install:*)&quot;
+    ]
+  }
+}</pre>
+      
+    </div>
+
+    <div class="card">
+      <h2>MCP Servers</h2>
+      
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Transport</th><th>Source</th><th>Status</th><th>Connectivity</th></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>browsermcp</td>
+                <td>stdio</td>
+                <td>User Global</td>
+                <td class="status-enabled">
+                  enabled
+                </td>
+                <td><span class="dim">Not checked</span></td>
+              </tr>
+            
+              <tr>
+                <td>playwright</td>
+                <td>stdio</td>
+                <td>User Global</td>
+                <td class="status-enabled">
+                  enabled
+                </td>
+                <td><span class="dim">Not checked</span></td>
+              </tr>
+            
+              <tr>
+                <td>github</td>
+                <td>http</td>
+                <td>User Global</td>
+                <td class="status-enabled">
+                  enabled
+                </td>
+                <td><span class="dim">Not checked</span></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+    </div>
+
+    <div class="card">
+      <h2>Plugins (12 enabled / 7 disabled)</h2>
+      
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Package</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>typescript-lsp</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-success">
+                    enabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>frontend-design</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-success">
+                    enabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>pyright-lsp</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-success">
+                    enabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>context7</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-warning">
+                    disabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>serena</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-warning">
+                    disabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>feature-dev</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-success">
+                    enabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>commit-commands</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-success">
+                    enabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>figma</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-warning">
+                    disabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>explanatory-output-style</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-warning">
+                    disabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>linear</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-success">
+                    enabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>hookify</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-success">
+                    enabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>greptile</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-warning">
+                    disabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>gitlab</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-success">
+                    enabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>code-review</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-success">
+                    enabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>pr-review-toolkit</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-success">
+                    enabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>Notion</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-warning">
+                    disabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>ralph-wiggum</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-success">
+                    enabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>ralph-loop</td>
+                <td>claude-plugins-official</td>
+                <td>
+                  <span class="badge badge-success">
+                    enabled
+                  </span>
+                </td>
+              </tr>
+            
+              <tr>
+                <td>canvas</td>
+                <td>claude-canvas</td>
+                <td>
+                  <span class="badge badge-warning">
+                    disabled
+                  </span>
+                </td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+    </div>
+
+    <div class="card">
+      <h2>CLAUDE.md Instructions</h2>
+      <table>
+        <thead>
+          <tr><th>Source</th><th>Path</th><th>Status</th><th>Lines</th></tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td>Project (.claude/)</td>
+              <td><code>/Users/adamdennis/github/adamwdennis/claude-doctor/.claude/CLAUDE.md</code></td>
+              <td class="dim">Not found</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td>Project Root</td>
+              <td><code>/Users/adamdennis/github/adamwdennis/claude-doctor/CLAUDE.md</code></td>
+              <td class="dim">Not found</td>
+              <td>0</td>
+            </tr>
+          
+            <tr>
+              <td>User Global</td>
+              <td><code>/Users/adamdennis/.claude/CLAUDE.md</code></td>
+              <td class="status-enabled">Found</td>
+              <td>39</td>
+            </tr>
+          
+        </tbody>
+      </table>
+      <p class="dim">Total: 39 lines</p>
+    </div>
+
+    <div class="card">
+      <h2>Usage Statistics (Last 30 days)</h2>
+      <div class="grid">
+        <div class="stat-box">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Messages</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Sessions</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">0</div>
+          <div class="stat-label">Tool Calls</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">N/A</div>
+          <div class="stat-label">Cost</div>
+        </div>
+      </div>
+    </div>
+
+    
+
+    
+    <div class="card">
+      <h2>Issues (2)</h2>
+      <ul class="issue-list">
+        
+          <li class="issue-item">
+            <span class="badge badge-warning">warning</span>
+            No project-level CLAUDE.md found
+          </li>
+        
+          <li class="issue-item">
+            <span class="badge badge-info">info</span>
+            7 plugin(s) disabled
+          </li>
+        
+      </ul>
+    </div>
+    
+
+    <footer>
+      Generated by claude-doctor v0.1.0
+    </footer>
+  </div>
+</body>
+</html>
