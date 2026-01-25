@@ -1,0 +1,24 @@
+{
+  "name": "claude-doctor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Monorepo for Claude Doctor CLI and Dashboard",
+  "scripts": {
+    "build": "pnpm build:cli && pnpm build:dashboard",
+    "build:cli": "pnpm --filter @claude-doctor/cli build",
+    "build:dashboard": "pnpm --filter @claude-doctor/dashboard build",
+    "dev": "pnpm -r --parallel dev",
+    "dev:cli": "pnpm --filter @claude-doctor/cli dev",
+    "dev:dashboard": "pnpm --filter @claude-doctor/dashboard dev",
+    "dev:full": "pnpm build:cli && concurrently -n cli,server,dash -c blue,green,magenta 'pnpm dev:cli' 'pnpm --filter @claude-doctor/cli exec nodemon --watch dist --exec \"node dist/index.mjs serve --no-open --project $PWD\"' 'pnpm dev:dashboard'",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "start": "pnpm --filter @claude-doctor/cli start"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
