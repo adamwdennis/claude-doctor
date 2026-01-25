@@ -71,6 +71,35 @@ export interface FileTraceCollection {
   homePath: string;
 }
 
+export interface Session {
+  id: string;
+  startedAt: string;
+  endedAt?: string;
+  messageCount: number;
+  toolCalls: string[];
+  tokensIn: number;
+  tokensOut: number;
+  costUsd: number;
+  cwd?: string;
+  model?: string;
+}
+
+export interface HistoryCollection {
+  sessions: Session[];
+  totals: {
+    sessionCount: number;
+    messageCount: number;
+    toolCallCount: number;
+    tokensIn: number;
+    tokensOut: number;
+    costUsd: number;
+  };
+  dateRange?: {
+    first: string;
+    last: string;
+  };
+}
+
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     headers: { "Content-Type": "application/json" },
@@ -107,5 +136,18 @@ export const api = {
   },
   fileTrace: {
     get: () => fetchJson<FileTraceCollection>(`${API_BASE}/file-trace`),
+    read: (path: string) =>
+      fetchJson<{ path: string; content: string }>(
+        `${API_BASE}/file-trace/read?path=${encodeURIComponent(path)}`
+      ),
+    save: (path: string, content: string) =>
+      fetchJson<{ success: boolean; path: string }>(`${API_BASE}/file-trace/save`, {
+        method: "PUT",
+        body: JSON.stringify({ path, content }),
+      }),
+  },
+  history: {
+    get: (limit = 100) =>
+      fetchJson<HistoryCollection>(`${API_BASE}/history?limit=${limit}`),
   },
 };

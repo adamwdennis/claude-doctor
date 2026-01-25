@@ -4,3 +4,4 @@ export { collectPlugins } from "./plugins.collector.js";
 export { collectInstructions } from "./instructions.collector.js";
 export { collectStats } from "./stats.collector.js";
 export { collectFileTrace } from "./filetrace.collector.js";
+export { collectHistory } from "./history.collector.js";

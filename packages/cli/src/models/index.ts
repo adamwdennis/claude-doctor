@@ -4,3 +4,4 @@ export * from "./plugin.model.js";
 export * from "./stats.model.js";
 export * from "./diagnostic.model.js";
 export * from "./filetrace.model.js";
+export * from "./history.model.js";

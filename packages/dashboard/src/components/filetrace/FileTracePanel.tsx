@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Folder, FileText, Check, X, Home, GitBranch } from "lucide-react";
+import { ChevronDown, ChevronRight, Folder, FileText, FileJson, Check, X, Home, GitBranch } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFileTrace } from "@/hooks/useFileTrace";
 import { FileTraceType, type FileTraceEntry, type FileTraceLevel } from "@/lib/api";
+import { FileEditorModal } from "./FileEditorModal";
 
 function getFileName(path: string): string {
   return path.split("/").pop() || path;
@@ -19,7 +20,16 @@ function getFileIcon(entry: FileTraceEntry) {
   if (entry.type === FileTraceType.ClaudeDir) {
     return <Folder className="h-3.5 w-3.5 text-blue-400" />;
   }
+  if (entry.path.endsWith(".json")) {
+    return <FileJson className="h-3.5 w-3.5 text-yellow-400" />;
+  }
   return <FileText className="h-3.5 w-3.5 text-gray-400" />;
+}
+
+function isEditableFile(entry: FileTraceEntry): boolean {
+  if (!entry.exists) return false;
+  if (entry.type === FileTraceType.ClaudeDir) return false;
+  return entry.path.endsWith(".json") || entry.path.endsWith(".md");
 }
 
 function getStatusIcon(exists: boolean) {
@@ -38,9 +48,10 @@ function formatSize(size?: number): string {
 
 interface LevelItemProps {
   level: FileTraceLevel;
+  onFileClick: (path: string) => void;
 }
 
-function LevelItem({ level }: LevelItemProps) {
+function LevelItem({ level, onFileClick }: LevelItemProps) {
   const [expanded, setExpanded] = useState(level.isProjectRoot);
   const existingFiles = level.files.filter((f) => f.exists);
   const hasFiles = level.files.length > 0;
@@ -91,27 +102,35 @@ function LevelItem({ level }: LevelItemProps) {
       </button>
       {expanded && hasFiles && (
         <div className="ml-3 border-l border-sidebar-border pl-2 pt-0.5">
-          {level.files.map((file) => (
-            <div
-              key={file.path}
-              className={cn(
-                "flex items-center gap-1.5 py-0.5 px-1",
-                !file.exists && "opacity-40"
-              )}
-              title={file.path}
-            >
-              {getFileIcon(file)}
-              <span className="truncate">{getRelativePath(file.path, level.directory)}</span>
-              <span className="ml-auto flex items-center gap-1">
-                {file.size !== undefined && (
-                  <span className="text-[10px] text-muted-foreground">
-                    {formatSize(file.size)}
-                  </span>
+          {level.files.map((file) => {
+            const editable = isEditableFile(file);
+            const handleClick = () => {
+              if (editable) onFileClick(file.path);
+            };
+            return (
+              <div
+                key={file.path}
+                onClick={handleClick}
+                className={cn(
+                  "flex items-center gap-1.5 py-0.5 px-1 rounded",
+                  !file.exists && "opacity-40",
+                  editable && "cursor-pointer hover:bg-sidebar-accent/50"
                 )}
-                {getStatusIcon(file.exists)}
-              </span>
-            </div>
-          ))}
+                title={editable ? `Click to edit: ${file.path}` : file.path}
+              >
+                {getFileIcon(file)}
+                <span className="truncate">{getRelativePath(file.path, level.directory)}</span>
+                <span className="ml-auto flex items-center gap-1">
+                  {file.size !== undefined && (
+                    <span className="text-[10px] text-muted-foreground">
+                      {formatSize(file.size)}
+                    </span>
+                  )}
+                  {getStatusIcon(file.exists)}
+                </span>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -121,6 +140,15 @@ function LevelItem({ level }: LevelItemProps) {
 export function FileTracePanel() {
   const { data, isLoading, error } = useFileTrace();
   const [expanded, setExpanded] = useState(true);
+  const [editingPath, setEditingPath] = useState<string | null>(null);
+
+  function handleFileClick(path: string) {
+    setEditingPath(path);
+  }
+
+  function handleCloseModal() {
+    setEditingPath(null);
+  }
 
   if (isLoading) {
     return (
@@ -153,10 +181,11 @@ export function FileTracePanel() {
       {expanded && (
         <div className="max-h-64 overflow-y-auto px-2 pb-2">
           {data.levels.map((level) => (
-            <LevelItem key={level.directory} level={level} />
+            <LevelItem key={level.directory} level={level} onFileClick={handleFileClick} />
           ))}
         </div>
       )}
+      <FileEditorModal path={editingPath} onClose={handleCloseModal} />
     </div>
   );
 }

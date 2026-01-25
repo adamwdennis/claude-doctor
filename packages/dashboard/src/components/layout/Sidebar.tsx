@@ -7,6 +7,7 @@ import {
   AlertTriangle,
   Plug,
   BarChart3,
+  Brain,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { FileTracePanel } from "@/components/filetrace/FileTracePanel";
@@ -23,6 +24,7 @@ const NAV_ITEMS: { id: Tab; label: string; icon: typeof User }[] = [
   { id: Tab.Issues, label: "Issues", icon: AlertTriangle },
   { id: Tab.Mcp, label: "MCP", icon: Plug },
   { id: Tab.Stats, label: "Stats", icon: BarChart3 },
+  { id: Tab.Memory, label: "Memory", icon: Brain },
 ];
 
 export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
@@ -66,7 +68,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
       <div className="mt-auto">
         <FileTracePanel />
         <div className="border-t p-4 text-xs text-muted-foreground">
-          Press 1-6 to switch tabs
+          Press 1-7 to switch tabs
         </div>
       </div>
     </aside>

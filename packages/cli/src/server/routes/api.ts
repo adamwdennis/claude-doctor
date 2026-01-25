@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { handleDiagnose } from "../handlers/diagnose.handler.js";
 import { addSseClient } from "../handlers/events.handler.js";
 import { handleFileTrace } from "../handlers/filetrace.handler.js";
+import { handleHistory } from "../handlers/history.handler.js";
 import { handleInstructions } from "../handlers/instructions.handler.js";
 import { handleIssues } from "../handlers/issues.handler.js";
 import { handleMcp } from "../handlers/mcp.handler.js";
@@ -37,7 +38,9 @@ export async function handleApiRequest(
 		} else if (url.startsWith("/api/stats")) {
 			await handleStats(req, res, projectPath);
 		} else if (url.startsWith("/api/file-trace")) {
-			await handleFileTrace(req, res, projectPath);
+			await handleFileTrace(req, res, projectPath, url, method);
+		} else if (url.startsWith("/api/history")) {
+			await handleHistory(req, res, url);
 		} else {
 			sendJson(res, 404, { error: "Not found" });
 		}
