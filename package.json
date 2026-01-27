@@ -19,7 +19,7 @@
     "dev": "pnpm -r --parallel dev",
     "dev:cli": "pnpm --filter @claude-doctor/cli dev",
     "dev:dashboard": "pnpm --filter @claude-doctor/dashboard dev",
-    "dev:full": "pnpm build:cli && concurrently -n cli,server,dash -c blue,green,magenta 'pnpm dev:cli' 'pnpm --filter @claude-doctor/cli exec nodemon --watch dist --exec \"node dist/index.mjs serve --no-open --project $PWD\"' 'pnpm dev:dashboard'",
+    "dev:full": "pnpm build:cli && concurrently -n cli,server,dash -c blue,green,magenta 'pnpm dev:cli' 'pnpm --filter @claude-doctor/cli exec nodemon --delay 2 --watch dist --exec \"node dist/index.mjs serve --no-open --project $PWD\"' 'pnpm dev:dashboard'",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",
     "start": "pnpm --filter @claude-doctor/cli start"

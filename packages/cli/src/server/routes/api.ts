@@ -42,6 +42,10 @@ export async function handleApiRequest(
 			await handleHooks(req, res, projectPath);
 		} else if (url.startsWith("/api/instructions/lint")) {
 			await handleInstructionsLint(req, res, projectPath);
+		} else if (url.startsWith("/api/instructions/merged")) {
+			const { collectMergedInstructions } =
+				await import("../../collectors/instructions-merged.collector.js");
+			sendJson(res, 200, collectMergedInstructions(projectPath));
 		} else if (url.startsWith("/api/instructions")) {
 			await handleInstructions(req, res, projectPath, url, method);
 		} else if (url === "/api/settings/effective") {

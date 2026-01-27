@@ -368,7 +368,7 @@ export const api = {
     get: () => fetchJson<ContextBudget>(`${API_BASE}/context`),
   },
   instructions: {
-    merged: () => fetchJson<MergedInstructionsResult>(`${API_BASE}/instructions`),
+    merged: () => fetchJson<MergedInstructionsResult>(`${API_BASE}/instructions/merged`),
     lint: () => fetchJson<InstructionsLintResult>(`${API_BASE}/instructions/lint`),
   },
   permissions: {
