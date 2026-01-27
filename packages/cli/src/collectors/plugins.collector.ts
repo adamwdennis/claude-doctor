@@ -1,4 +1,9 @@
-import { type PluginInfo, PluginStatus, type PluginsCollection } from "../models/index.js";
+import {
+	type PluginInfo,
+	PluginStatus,
+	type PluginsCollection,
+	type UserSettingsJson,
+} from "../models/index.js";
 import {
 	fileExists,
 	getInstalledPluginsPath,
@@ -18,10 +23,6 @@ interface PluginInstallation {
 interface InstalledPluginsJson {
 	version?: number;
 	plugins?: Record<string, PluginInstallation[]>;
-}
-
-interface UserSettingsJson {
-	enabledPlugins?: Record<string, boolean>;
 }
 
 export function collectPlugins(): PluginsCollection {

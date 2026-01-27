@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join, basename } from "node:path";
-import { type AgentInfo, type AgentsCollection } from "../models/index.js";
+import { type AgentInfo, type AgentsCollection, type UserSettingsJson } from "../models/index.js";
 import {
 	dirExists,
 	fileExists,
@@ -13,11 +13,6 @@ import {
 interface InstalledPluginsJson {
 	version?: number;
 	plugins?: Record<string, Array<{ scope?: string; installPath?: string }>>;
-}
-
-interface UserSettingsJson {
-	enabledPlugins?: Record<string, boolean>;
-	permissions?: { deny?: string[] };
 }
 
 interface AgentFrontmatter {

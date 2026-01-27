@@ -2,13 +2,9 @@ import { copyFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { collectPlugins } from "../../collectors/plugins.collector.js";
+import { type UserSettingsJson } from "../../models/index.js";
 import { fileExists, getUserSettingsPath, readJsonFile } from "../../utils/index.js";
 import { parseJson, readBody, sendJson } from "../routes/api.js";
-
-interface UserSettingsJson {
-	enabledPlugins?: Record<string, boolean>;
-	[key: string]: unknown;
-}
 
 export async function handlePlugins(
 	req: IncomingMessage,
