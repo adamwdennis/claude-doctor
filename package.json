@@ -3,6 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "description": "Monorepo for Claude Doctor CLI and Dashboard",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adamwdennis/claude-doctor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adamwdennis/claude-doctor/issues"
+  },
+  "homepage": "https://github.com/adamwdennis/claude-doctor#readme",
+  "author": "Adam Dennis",
   "scripts": {
     "build": "pnpm build:cli && pnpm build:dashboard",
     "build:cli": "pnpm --filter @claude-doctor/cli build",

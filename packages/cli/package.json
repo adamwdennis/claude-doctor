@@ -5,10 +5,33 @@
   "keywords": [
     "claude",
     "claude-code",
+    "anthropic",
+    "mcp",
+    "claude.md",
+    ".claude.json",
+    "mcp.json",
     "cli",
-    "diagnostic"
+    "diagnostic",
+    "config",
+    "debug"
   ],
+  "author": "Adam Dennis",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/adamwdennis/claude-doctor/issues"
+  },
+  "homepage": "https://github.com/adamwdennis/claude-doctor#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adamwdennis/claude-doctor.git",
+    "directory": "packages/cli"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "claude-doctor": "./dist/index.mjs"
   },

@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2 } from "lucide-react";
+import { CardLoader } from "@/components/ui/card-loader";
 import {
   BarChart,
   Bar,
@@ -34,13 +34,7 @@ export function StatsPanel() {
   const { stats, isLoading, error } = useStats();
 
   if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </CardContent>
-      </Card>
-    );
+    return <CardLoader />;
   }
 
   if (error) {

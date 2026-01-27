@@ -7,7 +7,7 @@ import { HealthBanner } from "./HealthBanner";
 import { QuickStats } from "./QuickStats";
 import { CriticalIssues } from "./CriticalIssues";
 import { McpStatus } from "./McpStatus";
-import { Loader2 } from "lucide-react";
+import { AnimatedLoader } from "@/components/ui/animated-loader";
 
 interface HomePageProps {
 	onNavigate: (tab: Tab) => void;
@@ -60,7 +60,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
 	if (isLoading) {
 		return (
 			<div className="flex h-64 items-center justify-center">
-				<Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+				<AnimatedLoader />
 			</div>
 		);
 	}

@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CardLoader } from "@/components/ui/card-loader";
+import { Spinner } from "@/components/ui/spinner";
 import { JsonEditor } from "./JsonEditor";
 import { SettingsFormTab } from "./SettingsFormTab";
-import { Save, RotateCcw, Loader2 } from "lucide-react";
+import { Save, RotateCcw } from "lucide-react";
 
 interface SettingsPanelProps {
   layer: string;
@@ -40,13 +42,7 @@ export function SettingsPanel({ layer, title }: SettingsPanelProps) {
   const hasChanges = localData !== null;
 
   if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </CardContent>
-      </Card>
-    );
+    return <CardLoader />;
   }
 
   if (error) {
@@ -77,7 +73,7 @@ export function SettingsPanel({ layer, title }: SettingsPanelProps) {
             aria-label="Save settings"
           >
             {isSaving ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Spinner className="mr-2" />
             ) : (
               <Save className="mr-2 h-4 w-4" />
             )}

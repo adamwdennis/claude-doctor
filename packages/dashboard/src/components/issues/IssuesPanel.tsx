@@ -8,13 +8,8 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Loader2,
-  AlertTriangle,
-  AlertCircle,
-  Info,
-  FileText,
-} from "lucide-react";
+import { CardLoader } from "@/components/ui/card-loader";
+import { AlertTriangle, AlertCircle, Info, FileText } from "lucide-react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -112,13 +107,7 @@ export function IssuesPanel() {
   });
 
   if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </CardContent>
-      </Card>
-    );
+    return <CardLoader />;
   }
 
   if (error) {

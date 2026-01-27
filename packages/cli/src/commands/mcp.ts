@@ -3,6 +3,7 @@ import { Command } from "commander";
 import type { GlobalOptions } from "../cli.js";
 import { collectMcp } from "../collectors/index.js";
 import { renderMcpJson, renderMcpTree } from "../renderers/index.js";
+import { createSpinner, shouldShowSpinner } from "../utils/index.js";
 
 interface McpOptions extends GlobalOptions {
 	check?: boolean;
@@ -19,7 +20,15 @@ export function mcpCommand(): Command {
 }
 
 export async function runMcp(options: McpOptions): Promise<void> {
+	const spinner = createSpinner();
+
+	if (shouldShowSpinner(options.format)) {
+		spinner.start();
+	}
+
 	const mcp = await collectMcp(options.project, options.check);
+
+	spinner.stop();
 
 	let output: string;
 	if (options.format === "json") {

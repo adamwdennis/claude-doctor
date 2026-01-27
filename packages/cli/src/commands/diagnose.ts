@@ -16,6 +16,7 @@ import {
 	renderDiagnosticReportHtml,
 	renderDiagnosticReportJson,
 } from "../renderers/index.js";
+import { createSpinner, shouldShowSpinner } from "../utils/index.js";
 
 interface DiagnoseOptions extends GlobalOptions {
 	check?: boolean;
@@ -41,6 +42,11 @@ export async function runDiagnose(
 	options: GlobalOptions & { check?: boolean; days?: number },
 ): Promise<void> {
 	const projectPath = resolve(options.project);
+	const spinner = createSpinner();
+
+	if (shouldShowSpinner(options.format)) {
+		spinner.start();
+	}
 
 	// Collect all data
 	const settings = collectSettings(projectPath);
@@ -48,6 +54,8 @@ export async function runDiagnose(
 	const plugins = collectPlugins();
 	const instructions = collectInstructions(projectPath);
 	const stats = await collectStats(options.days ?? 30);
+
+	spinner.stop();
 
 	// Analyze
 	const conflicts = analyzeConflicts(settings);

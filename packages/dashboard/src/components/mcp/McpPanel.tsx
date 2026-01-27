@@ -10,7 +10,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle2, XCircle, RefreshCw } from "lucide-react";
+import { CardLoader } from "@/components/ui/card-loader";
+import { Spinner } from "@/components/ui/spinner";
+import { CheckCircle2, XCircle, RefreshCw } from "lucide-react";
 
 export function McpPanel() {
   const {
@@ -34,13 +36,7 @@ export function McpPanel() {
   }, [servers, checkAllServers]);
 
   if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </CardContent>
-      </Card>
-    );
+    return <CardLoader />;
   }
 
   if (error) {
@@ -86,7 +82,7 @@ export function McpPanel() {
                         </div>
                         {isCheckingThis ? (
                           <Badge variant="secondary">
-                            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                            <Spinner className="mr-1" />
                             checking
                           </Badge>
                         ) : result ? (
@@ -142,7 +138,7 @@ export function McpPanel() {
                           aria-label={`Recheck connectivity for ${server.name}`}
                         >
                           {isCheckingThis ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            <Spinner className="mr-2" />
                           ) : (
                             <RefreshCw className="mr-2 h-4 w-4" />
                           )}

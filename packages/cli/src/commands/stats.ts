@@ -3,6 +3,7 @@ import { Command } from "commander";
 import type { GlobalOptions } from "../cli.js";
 import { collectStats } from "../collectors/index.js";
 import { renderStatsJson, renderStatsTree } from "../renderers/index.js";
+import { createSpinner, shouldShowSpinner } from "../utils/index.js";
 
 interface StatsOptions extends GlobalOptions {
 	days?: number;
@@ -19,7 +20,15 @@ export function statsCommand(): Command {
 }
 
 export async function runStats(options: StatsOptions): Promise<void> {
+	const spinner = createSpinner();
+
+	if (shouldShowSpinner(options.format)) {
+		spinner.start();
+	}
+
 	const stats = await collectStats(options.days ?? 30);
+
+	spinner.stop();
 
 	let output: string;
 	if (options.format === "json") {

@@ -33,3 +33,13 @@ npm-debug.log*
 .env
 .env.local
 .env.*.local
+
+# Generated reports
+report.html
+*.report.html
+
+# TypeScript
+*.tsbuildinfo
+
+# Vite
+*.local

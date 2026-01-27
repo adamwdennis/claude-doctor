@@ -1,49 +1,18 @@
 # claude-doctor
 
-CLI tool to diagnose and understand your [Claude Code](https://docs.anthropic.com/en/docs/claude-code) configuration hierarchy, MCP servers, plugins, and CLAUDE.md instructions.
+**Finally understand your Claude Code setup.**
 
-## Installation
+[![npm version](https://img.shields.io/npm/v/@claude-doctor/cli.svg)](https://www.npmjs.com/package/@claude-doctor/cli)
+[![GitHub](https://img.shields.io/github/stars/adamwdennis/claude-doctor?style=social)](https://github.com/adamwdennis/claude-doctor)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-```bash
-npm install -g claude-doctor
+Claude Code's configuration is powerful but complex—6 layers of settings, multiple CLAUDE.md files, MCP servers from different sources, dozens of plugins. When something isn't working, good luck figuring out why.
+
+**claude-doctor** gives you instant visibility into your entire Claude Code configuration hierarchy.
+
 ```
-
-Or run directly:
-
-```bash
 npx claude-doctor
 ```
-
-**Requires Node.js >= 20.19**
-
-## Usage
-
-```bash
-claude-doctor [options] [command]
-```
-
-### Options
-
-| Option | Description | Default |
-|--------|-------------|---------|
-| `-p, --project <path>` | Project directory | Current directory |
-| `-f, --format <type>` | Output format: `tree`, `json`, `html` | `tree` |
-| `-o, --output <file>` | Write output to file | stdout |
-| `-V, --version` | Show version | |
-| `-h, --help` | Show help | |
-
-### Commands
-
-| Command | Description |
-|---------|-------------|
-| `config` | Show settings hierarchy (all 6 layers) |
-| `mcp [--check]` | Show MCP server configuration (with connectivity check) |
-| `plugins` | Show installed plugins and their status |
-| `instructions` | Show CLAUDE.md merge order |
-| `stats [--days N]` | Show usage statistics (default: 30 days) |
-| `diagnose` | Full diagnostic report (default command) |
-
-## Example Output
 
 ```
 Claude Code Configuration
@@ -84,60 +53,101 @@ Issues (1 warnings)
 └── [W] No project-level CLAUDE.md found
 ```
 
-## Configuration Sources
+## Why claude-doctor?
 
-### Settings Hierarchy (highest → lowest precedence)
+**Debug configuration issues fast.** Stop guessing why Claude ignores your CLAUDE.md or why an MCP server isn't available. See exactly which config files exist, their precedence, and what's overriding what.
 
-1. **Managed Policy** - `/etc/claude-code/` (enterprise)
-2. **CLI Flags** - Runtime arguments
-3. **Project Local** - `.claude/settings.local.json` (gitignored)
-4. **Project Shared** - `.claude/settings.json` (committed)
-5. **User** - `~/.claude/settings.json`
-6. **Built-in Defaults** - Hardcoded defaults
+**Understand the full picture.** Claude Code pulls settings from 6 different layers, instructions from 3 CLAUDE.md locations, and MCP servers from multiple sources. claude-doctor shows you everything in one view.
 
-### CLAUDE.md Instructions (highest → lowest precedence)
+**Catch problems automatically.** Built-in issue detection warns you about disabled servers, missing instructions, settings conflicts, and unreachable endpoints.
 
-1. `.claude/CLAUDE.md` - Project-specific (in .claude dir)
-2. `./CLAUDE.md` - Project root
-3. `~/.claude/CLAUDE.md` - User global
+**Track your usage.** See messages sent, sessions, tool calls, and costs over time.
 
-### MCP Servers
+## Installation
 
-1. **User Global** - `~/.claude.json`
-2. **Project** - `.mcp.json`
-3. **Plugin-provided** - From installed plugins
-4. **Project Overrides** - Project-specific settings
+```bash
+npm install -g @claude-doctor/cli
+```
+
+Or run directly:
+
+```bash
+npx claude-doctor
+```
+
+**Requires Node.js >= 20.19**
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `diagnose` | Full diagnostic report (default) |
+| `config` | Settings hierarchy (all 6 layers) |
+| `mcp [--check]` | MCP servers (with optional connectivity test) |
+| `plugins` | Installed plugins and status |
+| `instructions` | CLAUDE.md merge order |
+| `stats [--days N]` | Usage statistics |
+| `serve` | Launch interactive web dashboard |
+
+## Options
+
+| Option | Description |
+|--------|-------------|
+| `-p, --project <path>` | Project directory (default: cwd) |
+| `-f, --format <type>` | Output: `tree`, `json`, `html` |
+| `-o, --output <file>` | Write to file instead of stdout |
 
 ## Output Formats
 
-### Tree (default)
+**Tree** (default) — Colored ASCII with status indicators:
+- `[*]` Found/Active
+- `[ ]` Not found
+- `[E]` Enabled
+- `[D]` Disabled
+- `[!]` Warning
 
-Colored ASCII tree with status indicators:
-- `[*]` - Found/Active
-- `[ ]` - Not found
-- `[!]` - Warning/Default
-- `[E]` - Enabled
-- `[D]` - Disabled
-
-### JSON
-
-Full structured data for programmatic use:
-
+**JSON** — Structured data for scripts and automation:
 ```bash
 claude-doctor diagnose --format json > report.json
 ```
 
-### HTML
-
-Interactive dark-themed report:
-
+**HTML** — Interactive dark-themed report:
 ```bash
 claude-doctor diagnose --format html -o report.html
 ```
 
+**Web Dashboard** — Live interactive UI:
+```bash
+claude-doctor serve
+```
+
+## What It Checks
+
+### Settings Hierarchy (highest → lowest precedence)
+
+1. **Managed Policy** — `/etc/claude-code/` (enterprise)
+2. **CLI Flags** — Runtime arguments
+3. **Project Local** — `.claude/settings.local.json` (gitignored)
+4. **Project Shared** — `.claude/settings.json` (committed)
+5. **User** — `~/.claude/settings.json`
+6. **Built-in Defaults**
+
+### CLAUDE.md Instructions (highest → lowest precedence)
+
+1. `.claude/CLAUDE.md` — Project-specific
+2. `./CLAUDE.md` — Project root
+3. `~/.claude/CLAUDE.md` — User global
+
+### MCP Servers
+
+1. **User Global** — `~/.claude.json`
+2. **Project** — `.mcp.json`
+3. **Plugin-provided** — From installed plugins
+4. **Project Overrides** — Local settings
+
 ## Issue Detection
 
-The tool automatically detects:
+claude-doctor automatically flags:
 
 - Missing project-level CLAUDE.md
 - Disabled MCP servers
@@ -146,72 +156,9 @@ The tool automatically detects:
 - Settings conflicts between layers
 - Missing configuration files
 
-## Development
+## Contributing
 
-### Tech Stack
-
-Built with the modern [VoidZero](https://voidzero.dev/) toolchain:
-
-| Tool | Purpose |
-|------|---------|
-| **TypeScript** | Language (ESM) |
-| **[tsdown](https://tsdown.dev)** | Bundler (Rolldown-powered) |
-| **[oxlint](https://oxc.rs/docs/guide/usage/linter)** | Linter (30x faster than ESLint) |
-| **[oxfmt](https://oxc.rs/docs/guide/usage/formatter)** | Formatter (30x faster than Prettier) |
-| **[Vitest](https://vitest.dev)** | Test runner |
-| **[Commander.js](https://github.com/tj/commander.js)** | CLI framework |
-| **[Chalk](https://github.com/chalk/chalk)** | Terminal styling |
-
-### Scripts
-
-```bash
-npm run build       # Build for production
-npm run dev         # Watch mode
-npm run lint        # Lint + format (fix)
-npm run lint:check  # Lint + format (check only)
-npm run format      # Format only
-npm run test        # Run tests
-npm run test:watch  # Watch mode tests
-npm run start       # Run built CLI
-```
-
-### Project Structure
-
-```
-src/
-├── index.ts              # Entry point (with shebang)
-├── cli.ts                # Commander setup
-├── commands/             # CLI commands
-│   ├── config.ts
-│   ├── mcp.ts
-│   ├── plugins.ts
-│   ├── instructions.ts
-│   ├── stats.ts
-│   └── diagnose.ts
-├── collectors/           # Data collection
-│   ├── settings.collector.ts
-│   ├── mcp.collector.ts
-│   ├── plugins.collector.ts
-│   ├── instructions.collector.ts
-│   └── stats.collector.ts
-├── models/               # TypeScript interfaces
-│   ├── config.model.ts
-│   ├── mcp.model.ts
-│   ├── plugin.model.ts
-│   ├── stats.model.ts
-│   └── diagnostic.model.ts
-├── analyzers/            # Issue/conflict detection
-│   ├── issue.analyzer.ts
-│   └── conflict.analyzer.ts
-├── renderers/            # Output formatters
-│   ├── tree.renderer.ts
-│   ├── json.renderer.ts
-│   └── html.renderer.ts
-└── utils/                # Helpers
-    ├── paths.ts
-    ├── file.ts
-    └── merge.ts
-```
+Issues and PRs welcome at [github.com/adamwdennis/claude-doctor](https://github.com/adamwdennis/claude-doctor).
 
 ## License
 
