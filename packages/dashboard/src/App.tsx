@@ -10,6 +10,7 @@ import { McpPanel } from "@/components/mcp/McpPanel";
 import { IssuesPanel } from "@/components/issues/IssuesPanel";
 import { StatsPanel } from "@/components/stats/StatsPanel";
 import { MemoryPanel } from "@/components/memory/MemoryPanel";
+import { AgentsPanel } from "@/components/agents/AgentsPanel";
 import { LiveUpdatesProvider } from "@/contexts/LiveUpdatesProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Tab, TABS, DEFAULT_TAB, isValidTab } from "@/types/tabs";
@@ -59,6 +60,8 @@ export default function App() {
         return <StatsPanel />;
       case Tab.Memory:
         return <MemoryPanel />;
+      case Tab.Agents:
+        return <AgentsPanel />;
     }
   }
 

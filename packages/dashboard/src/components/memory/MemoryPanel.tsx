@@ -17,8 +17,16 @@ function formatTokens(tokens: number): string {
   return String(tokens);
 }
 
+function parseDate(dateStr: string): Date {
+  const num = Number(dateStr);
+  if (!Number.isNaN(num) && num > 1_000_000_000) {
+    return new Date(num);
+  }
+  return new Date(dateStr);
+}
+
 function formatDate(dateStr: string): string {
-  const date = new Date(dateStr);
+  const date = parseDate(dateStr);
   return date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -28,8 +36,8 @@ function formatDate(dateStr: string): string {
 }
 
 function formatDateRange(first: string, last: string): string {
-  const f = new Date(first);
-  const l = new Date(last);
+  const f = parseDate(first);
+  const l = parseDate(last);
   return `${f.toLocaleDateString("en-US", { month: "short", day: "numeric" })} - ${l.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
 }
 
@@ -37,8 +45,13 @@ interface SessionRowProps {
   session: Session;
 }
 
+function hasTokenData(session: Session): boolean {
+  return session.tokensIn > 0 || session.tokensOut > 0 || session.costUsd > 0;
+}
+
 function SessionRow({ session }: SessionRowProps) {
   const [expanded, setExpanded] = useState(false);
+  const showTokens = hasTokenData(session);
 
   function handleClick() {
     setExpanded(!expanded);
@@ -83,11 +96,11 @@ function SessionRow({ session }: SessionRowProps) {
           </span>
           <span className="flex items-center gap-1" title="Tokens">
             <Hash className="h-3 w-3" />
-            {formatTokens(session.tokensIn + session.tokensOut)}
+            {showTokens ? formatTokens(session.tokensIn + session.tokensOut) : "N/A"}
           </span>
           <span className="flex items-center gap-1 min-w-[60px]" title="Cost">
             <Coins className="h-3 w-3" />
-            {formatCost(session.costUsd)}
+            {showTokens ? formatCost(session.costUsd) : "N/A"}
           </span>
         </div>
       </button>
@@ -96,11 +109,15 @@ function SessionRow({ session }: SessionRowProps) {
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div>
               <span className="text-muted-foreground">Tokens In:</span>{" "}
-              <span className="font-mono">{formatTokens(session.tokensIn)}</span>
+              <span className="font-mono">
+                {showTokens ? formatTokens(session.tokensIn) : "N/A"}
+              </span>
             </div>
             <div>
               <span className="text-muted-foreground">Tokens Out:</span>{" "}
-              <span className="font-mono">{formatTokens(session.tokensOut)}</span>
+              <span className="font-mono">
+                {showTokens ? formatTokens(session.tokensOut) : "N/A"}
+              </span>
             </div>
           </div>
           {session.toolCalls.length > 0 && (

@@ -33,6 +33,10 @@ export function getHistoryPath(): string {
 	return join(getClaudeUserDir(), "history.jsonl");
 }
 
+export function getAgentsPluginsDir(): string {
+	return join(getClaudeUserDir(), "agents", "plugins");
+}
+
 export function getManagedPolicyDir(): string {
 	return "/etc/claude-code";
 }

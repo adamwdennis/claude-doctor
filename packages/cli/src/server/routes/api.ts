@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { handleAgents } from "../handlers/agents.handler.js";
 import { handleDiagnose } from "../handlers/diagnose.handler.js";
 import { addSseClient } from "../handlers/events.handler.js";
 import { handleFileTrace } from "../handlers/filetrace.handler.js";
@@ -39,6 +40,8 @@ export async function handleApiRequest(
 			await handleStats(req, res, projectPath);
 		} else if (url.startsWith("/api/file-trace")) {
 			await handleFileTrace(req, res, projectPath, url, method);
+		} else if (url.startsWith("/api/agents")) {
+			await handleAgents(req, res, url, method);
 		} else if (url.startsWith("/api/history")) {
 			await handleHistory(req, res, url);
 		} else {

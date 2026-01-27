@@ -6,6 +6,7 @@ export enum Tab {
   Mcp = "mcp",
   Stats = "stats",
   Memory = "memory",
+  Agents = "agents",
 }
 
 export const TABS = Object.values(Tab);

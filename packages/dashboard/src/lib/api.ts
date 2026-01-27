@@ -100,6 +100,22 @@ export interface HistoryCollection {
   };
 }
 
+export interface AgentInfo {
+  name: string;
+  description: string;
+  pluginName: string;
+  pluginFullName: string;
+  model: string;
+  filePath: string;
+  enabled: boolean;
+}
+
+export interface AgentsCollection {
+  agents: AgentInfo[];
+  enabledCount: number;
+  disabledCount: number;
+}
+
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     headers: { "Content-Type": "application/json" },
@@ -149,5 +165,16 @@ export const api = {
   history: {
     get: (limit = 100) =>
       fetchJson<HistoryCollection>(`${API_BASE}/history?limit=${limit}`),
+  },
+  agents: {
+    list: () => fetchJson<AgentsCollection>(`${API_BASE}/agents`),
+    toggle: (pluginFullName: string, enabled: boolean) =>
+      fetchJson<{ success: boolean; pluginFullName: string; enabled: boolean }>(
+        `${API_BASE}/agents/toggle`,
+        {
+          method: "POST",
+          body: JSON.stringify({ pluginFullName, enabled }),
+        }
+      ),
   },
 };
