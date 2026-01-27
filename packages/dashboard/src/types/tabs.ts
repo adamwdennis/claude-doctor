@@ -4,7 +4,6 @@ export enum Tab {
   Project = "project",
   Issues = "issues",
   Mcp = "mcp",
-  Stats = "stats",
   Memory = "memory",
   Agents = "agents",
   Context = "context",

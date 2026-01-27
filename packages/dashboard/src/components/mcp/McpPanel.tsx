@@ -69,8 +69,14 @@ export function McpPanel() {
         </CardHeader>
         <CardContent>
           {servers.length === 0 ? (
-            <div className="text-sm text-muted-foreground">
-              No MCP servers configured
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="rounded-full bg-blue-500/10 p-4 mb-4">
+                <CheckCircle2 className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <p className="text-lg font-medium text-foreground">No servers configured</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Add MCP servers to your .mcp.json or settings to see them here.
+              </p>
             </div>
           ) : (
             <div className="space-y-4">

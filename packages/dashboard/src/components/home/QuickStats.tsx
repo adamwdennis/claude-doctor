@@ -8,6 +8,7 @@ import {
 	Blocks,
 	FileCode,
 } from "lucide-react";
+import { CountUp } from "@/components/reactbits/CountUp";
 
 interface QuickStatsProps {
 	errorCount: number;
@@ -28,17 +29,24 @@ interface StatCardProps {
 }
 
 function StatCard({ label, value, icon: Icon, color, onClick }: StatCardProps) {
+	const numericValue = typeof value === "number" ? value : null;
 	return (
 		<Card
-			className="cursor-pointer transition-colors hover:bg-accent/50"
+			className="cursor-pointer transition-all hover:bg-accent/50 hover:shadow-[0_0_15px_rgba(var(--glow-rgb,255_255_255),0.08)] glow-border"
 			onClick={onClick}
 		>
 			<CardContent className="flex items-center gap-3 p-4">
-				<div className={cn("rounded-md p-2", color)}>
-					<Icon className="h-5 w-5 text-white" />
+				<div className={cn("rounded-lg p-2.5 shadow-lg", color)}>
+					<Icon className="h-5 w-5 text-white drop-shadow-sm" />
 				</div>
 				<div>
-					<div className="text-2xl font-bold">{value}</div>
+					<div className="text-2xl font-bold">
+						{numericValue !== null ? (
+							<CountUp to={numericValue} />
+						) : (
+							value
+						)}
+					</div>
 					<div className="text-xs text-muted-foreground">{label}</div>
 				</div>
 			</CardContent>
@@ -61,35 +69,35 @@ export function QuickStats({
 				label="Errors"
 				value={errorCount}
 				icon={AlertCircle}
-				color="bg-red-500"
+				color="bg-gradient-to-br from-red-500 to-red-700"
 				onClick={() => onNavigate(Tab.Issues)}
 			/>
 			<StatCard
 				label="Warnings"
 				value={warningCount}
 				icon={AlertTriangle}
-				color="bg-yellow-500"
+				color="bg-gradient-to-br from-yellow-500 to-amber-600"
 				onClick={() => onNavigate(Tab.Issues)}
 			/>
 			<StatCard
 				label="MCP Servers"
 				value={`${mcpReachable}/${mcpTotal}`}
 				icon={Plug}
-				color="bg-blue-500"
+				color="bg-gradient-to-br from-blue-500 to-blue-700"
 				onClick={() => onNavigate(Tab.Mcp)}
 			/>
 			<StatCard
 				label="Plugins"
 				value={pluginCount}
 				icon={Blocks}
-				color="bg-purple-500"
-				onClick={() => onNavigate(Tab.Stats)}
+				color="bg-gradient-to-br from-purple-500 to-violet-700"
+				onClick={() => onNavigate(Tab.Agents)}
 			/>
 			<StatCard
 				label="Config Files"
 				value={configFileCount}
 				icon={FileCode}
-				color="bg-amber-500"
+				color="bg-gradient-to-br from-amber-500 to-orange-600"
 				onClick={() => onNavigate(Tab.User)}
 			/>
 		</div>

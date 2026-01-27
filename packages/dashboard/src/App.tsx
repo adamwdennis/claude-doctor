@@ -8,13 +8,13 @@ import { HomePage } from "@/components/home/HomePage";
 import { SettingsPanel } from "@/components/settings/SettingsPanel";
 import { McpPanel } from "@/components/mcp/McpPanel";
 import { IssuesPanel } from "@/components/issues/IssuesPanel";
-import { StatsPanel } from "@/components/stats/StatsPanel";
+
 import { MemoryPanel } from "@/components/memory/MemoryPanel";
 import { AgentsPanel } from "@/components/agents/AgentsPanel";
 import { ContextPanel } from "@/components/context/ContextPanel";
 import { SnapshotsPanel } from "@/components/snapshots/SnapshotsPanel";
 import { LiveUpdatesProvider } from "@/contexts/LiveUpdatesProvider";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { useSidebarCollapse } from "@/hooks/useSidebarCollapse";
 import { Tab, TABS, DEFAULT_TAB, isValidTab } from "@/types/tabs";
 
 export default function App() {
@@ -22,11 +22,13 @@ export default function App() {
   const tabParam = searchParams.get("tab");
   const activeTab = isValidTab(tabParam) ? tabParam : DEFAULT_TAB;
   const [search, setSearch] = useState("");
+  const { collapsed, toggle: toggleSidebar } = useSidebarCollapse();
 
   const handleTabChange = useCallback(
     (tab: Tab) => {
       setSearchParams((prev) => {
         prev.set("tab", tab);
+        prev.delete("session");
         return prev;
       });
     },
@@ -44,10 +46,6 @@ export default function App() {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return;
-      }
-      if (e.key === "0" && TABS.length >= 10) {
-        handleTabChange(TABS[9]);
         return;
       }
       const num = parseInt(e.key, 10);
@@ -71,8 +69,6 @@ export default function App() {
         return <IssuesPanel onNavigate={handleTabChange} />;
       case Tab.Mcp:
         return <McpPanel />;
-      case Tab.Stats:
-        return <StatsPanel />;
       case Tab.Memory:
         return <MemoryPanel />;
       case Tab.Agents:
@@ -86,28 +82,26 @@ export default function App() {
 
   return (
     <LiveUpdatesProvider>
-      <TooltipProvider>
-        <Toaster position="bottom-right" theme="dark" richColors />
-        <div className="flex h-screen">
-          <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
-          <div className="flex flex-1 flex-col">
-            <Header search={search} onSearchChange={handleChangeSearch} />
-            <main className="flex-1 overflow-auto p-6">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeTab}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  {renderContent()}
-                </motion.div>
-              </AnimatePresence>
-            </main>
-          </div>
+      <Toaster position="bottom-right" theme="dark" richColors />
+      <div className="flex h-screen">
+        <Sidebar activeTab={activeTab} onTabChange={handleTabChange} collapsed={collapsed} onToggle={toggleSidebar} />
+        <div className="flex flex-1 flex-col">
+          <Header search={search} onSearchChange={handleChangeSearch} />
+          <main className="flex-1 overflow-auto p-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.15 }}
+              >
+                {renderContent()}
+              </motion.div>
+            </AnimatePresence>
+          </main>
         </div>
-      </TooltipProvider>
+      </div>
     </LiveUpdatesProvider>
   );
 }

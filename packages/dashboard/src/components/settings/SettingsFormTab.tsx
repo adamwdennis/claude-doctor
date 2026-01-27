@@ -148,7 +148,7 @@ const SECTIONS: SectionConfig[] = [
 
 export function SettingsFormTab({ data, onChange }: SettingsFormTabProps) {
 	return (
-		<Accordion type="multiple" className="w-full" defaultValue={["permissions"]}>
+		<Accordion multiple className="w-full" defaultValue={["permissions"]}>
 			{SECTIONS.map((section) => {
 				const Icon = section.icon;
 				const badge = section.getBadge?.(data);

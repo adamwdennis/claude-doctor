@@ -27,8 +27,8 @@ export function Header({ search, onSearchChange }: HeaderProps) {
   }
 
   return (
-    <header className="flex h-14 items-center justify-between border-b px-6">
-      <div className="relative w-64">
+    <header className="flex h-14 items-center justify-between border-b px-6 glass">
+      <div className="relative w-48 transition-all duration-300 ease-out focus-within:w-72">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Search..."

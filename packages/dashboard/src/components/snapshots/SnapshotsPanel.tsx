@@ -86,8 +86,18 @@ export function SnapshotsPanel() {
         </CardHeader>
         <CardContent>
           {snapshots.length === 0 ? (
-            <div className="py-8 text-center text-muted-foreground">
-              No snapshots yet. Click "Take Snapshot" to save current state.
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="rounded-full bg-blue-500/10 p-4 mb-4">
+                <GitCompareArrows className="h-8 w-8 text-blue-500" />
+              </div>
+              <p className="text-lg font-medium text-foreground">No snapshots yet</p>
+              <p className="mt-1 text-sm text-muted-foreground max-w-sm">
+                Take a snapshot to save your current config state. Compare two snapshots to see what changed.
+              </p>
+              <Button className="mt-4" onClick={() => createSnapshot(undefined)} disabled={isCreating}>
+                {isCreating ? <Spinner className="mr-2" /> : <Plus className="mr-2 h-4 w-4" />}
+                Take First Snapshot
+              </Button>
             </div>
           ) : (
             <div className="rounded-md border">
@@ -103,7 +113,7 @@ export function SnapshotsPanel() {
                 </thead>
                 <tbody>
                   {snapshots.map((snap) => (
-                    <tr key={snap.id} className="border-b last:border-b-0">
+                    <tr key={snap.id} className="border-b last:border-b-0 transition-colors hover:bg-accent/50">
                       <td className="px-4 py-3">
                         <input
                           type="checkbox"

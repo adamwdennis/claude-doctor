@@ -44,7 +44,7 @@ export function ObjectEditor({ data, onChange, path }: ObjectEditorProps) {
       {entries.length === 0 ? (
         <div className="text-sm text-muted-foreground">No properties</div>
       ) : (
-        <Accordion type="multiple" className="w-full">
+        <Accordion multiple className="w-full">
           {entries.map(([key, value]) => {
             const fullPath = path ? `${path}.${key}` : key;
             const valueType = getValueType(value);

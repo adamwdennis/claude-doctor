@@ -198,7 +198,7 @@ export function HooksSection({ data, onChange }: SectionProps) {
 	}
 
 	return (
-		<Accordion type="multiple" className="w-full">
+		<Accordion multiple className="w-full">
 			{Object.values(HookEvent).map((event) => (
 				<HookList
 					key={event}

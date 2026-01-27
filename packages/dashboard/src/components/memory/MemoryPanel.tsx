@@ -1,12 +1,14 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useHistory, type Session } from "@/hooks/useHistory";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BlurText } from "@/components/reactbits/BlurText";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CardLoader } from "@/components/ui/card-loader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight, Calendar, MessageSquare, Wrench, Coins, Hash, ArrowUpDown } from "lucide-react";
-import { SessionTimeline } from "./SessionTimeline";
+import { Calendar, MessageSquare, Wrench, Coins, Hash, ArrowUpDown, ExternalLink } from "lucide-react";
+import { SessionDetailPage } from "./SessionDetailPage";
 
 function formatCost(cost: number): string {
   if (cost < 0.01) return `$${cost.toFixed(4)}`;
@@ -78,98 +80,64 @@ function formatDateRange(first: string, last: string): string {
   return `${f.toLocaleDateString("en-US", { month: "short", day: "numeric" })} - ${l.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
 }
 
-interface SessionRowProps {
-  session: Session;
-}
-
 function hasTokenData(session: Session): boolean {
   return session.tokensIn > 0 || session.tokensOut > 0 || session.costUsd > 0;
 }
 
-function SessionRow({ session }: SessionRowProps) {
-  const [expanded, setExpanded] = useState(false);
+interface SessionRowProps {
+  session: Session;
+  onSelect: (sessionId: string) => void;
+}
+
+function SessionRow({ session, onSelect }: SessionRowProps) {
   const showTokens = hasTokenData(session);
 
   function handleClick() {
-    setExpanded(!expanded);
+    onSelect(session.id);
   }
 
   return (
-    <div className="border-b last:border-b-0">
-      <button
-        onClick={handleClick}
-        className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted/50 transition-colors"
-      >
-        {expanded ? (
-          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
-        ) : (
-          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+    <button
+      onClick={handleClick}
+      className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted/50 transition-colors border-b last:border-b-0"
+    >
+      <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium truncate">
+            {formatDate(session.startedAt)}
+          </span>
+          {session.model && (
+            <Badge variant="outline" className="text-xs">
+              {session.model}
+            </Badge>
+          )}
+        </div>
+        {session.cwd && (
+          <div className="text-xs text-muted-foreground truncate">
+            {session.cwd}
+          </div>
         )}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium truncate">
-              {formatDate(session.startedAt)}
-            </span>
-            {session.model && (
-              <Badge variant="outline" className="text-xs">
-                {session.model}
-              </Badge>
-            )}
-          </div>
-          {session.cwd && (
-            <div className="text-xs text-muted-foreground truncate">
-              {session.cwd}
-            </div>
-          )}
-        </div>
-        <div className="flex items-center gap-4 text-xs text-muted-foreground shrink-0">
-          <span className="flex items-center gap-1" title="Messages">
-            <MessageSquare className="h-3 w-3" />
-            {session.messageCount}
-          </span>
-          <span className="flex items-center gap-1" title="Tool calls">
-            <Wrench className="h-3 w-3" />
-            {session.toolCalls.length}
-          </span>
-          <span className="flex items-center gap-1" title="Tokens">
-            <Hash className="h-3 w-3" />
-            {showTokens ? formatTokens(session.tokensIn + session.tokensOut) : "N/A"}
-          </span>
-          <span className="flex items-center gap-1 min-w-[60px]" title="Cost">
-            <Coins className="h-3 w-3" />
-            {showTokens ? formatCost(session.costUsd) : "N/A"}
-          </span>
-        </div>
-      </button>
-      {expanded && (
-        <div className="px-4 pb-3 pl-10 space-y-2">
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div>
-              <span className="text-muted-foreground">Tokens In:</span>{" "}
-              <span className="font-mono">
-                {showTokens ? formatTokens(session.tokensIn) : "N/A"}
-              </span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Tokens Out:</span>{" "}
-              <span className="font-mono">
-                {showTokens ? formatTokens(session.tokensOut) : "N/A"}
-              </span>
-            </div>
-          </div>
-          {session.toolCalls.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {session.toolCalls.map((tool) => (
-                <Badge key={tool} variant="secondary" className="text-xs">
-                  {tool}
-                </Badge>
-              ))}
-            </div>
-          )}
-          <SessionTimeline sessionId={session.id} />
-        </div>
-      )}
-    </div>
+      </div>
+      <div className="flex items-center gap-4 text-xs text-muted-foreground shrink-0">
+        <span className="flex items-center gap-1" title="Messages">
+          <MessageSquare className="h-3 w-3" />
+          {session.messageCount}
+        </span>
+        <span className="flex items-center gap-1" title="Tool calls">
+          <Wrench className="h-3 w-3" />
+          {session.toolCalls.length}
+        </span>
+        <span className="flex items-center gap-1" title="Tokens">
+          <Hash className="h-3 w-3" />
+          {showTokens ? formatTokens(session.tokensIn + session.tokensOut) : "N/A"}
+        </span>
+        <span className="flex items-center gap-1 min-w-[60px]" title="Cost">
+          <Coins className="h-3 w-3" />
+          {showTokens ? formatCost(session.costUsd) : "N/A"}
+        </span>
+      </div>
+    </button>
   );
 }
 
@@ -181,8 +149,8 @@ interface StatCardProps {
 
 function StatCard({ label, value, icon }: StatCardProps) {
   return (
-    <div className="flex items-center gap-3 rounded-lg border p-4">
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+    <div className="flex items-center gap-3 rounded-xl border bg-card p-4 transition-shadow hover:shadow-[0_0_15px_rgba(var(--glow-rgb),0.08)] glow-border">
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted/80">
         {icon}
       </div>
       <div>
@@ -202,6 +170,8 @@ const SORT_OPTIONS: { field: SortField; label: string }[] = [
 ];
 
 export function MemoryPanel() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sessionId = searchParams.get("session");
   const { data, isLoading, error } = useHistory(100);
   const [sortField, setSortField] = useState<SortField>(SortField.Date);
   const [sortDir, setSortDir] = useState<SortDir>("desc");
@@ -210,6 +180,20 @@ export function MemoryPanel() {
     if (!data) return [];
     return sortSessions(data.sessions, sortField, sortDir);
   }, [data, sortField, sortDir]);
+
+  function handleSelectSession(id: string) {
+    setSearchParams((prev) => {
+      prev.set("session", id);
+      return prev;
+    });
+  }
+
+  function handleBack() {
+    setSearchParams((prev) => {
+      prev.delete("session");
+      return prev;
+    });
+  }
 
   function handleToggleSort(field: SortField) {
     if (sortField === field) {
@@ -220,6 +204,12 @@ export function MemoryPanel() {
     }
   }
 
+  // Detail view
+  if (sessionId) {
+    return <SessionDetailPage sessionId={sessionId} onBack={handleBack} />;
+  }
+
+  // List view
   if (isLoading) {
     return <CardLoader />;
   }
@@ -288,7 +278,7 @@ export function MemoryPanel() {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Recent Sessions</CardTitle>
+          <CardTitle><BlurText text="Recent Sessions" /></CardTitle>
           <div className="flex items-center gap-1">
             {SORT_OPTIONS.map((opt) => (
               <Button
@@ -312,9 +302,13 @@ export function MemoryPanel() {
               No sessions found
             </div>
           ) : (
-            <div className="max-h-[500px] overflow-y-auto">
+            <div className="max-h-[600px] overflow-y-auto">
               {sorted.map((session) => (
-                <SessionRow key={session.id} session={session} />
+                <SessionRow
+                  key={session.id}
+                  session={session}
+                  onSelect={handleSelectSession}
+                />
               ))}
             </div>
           )}

@@ -13,6 +13,7 @@ import { AlertTriangle, AlertCircle, Info, FileText, Wrench } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { useFix } from "@/hooks/useFix";
 import { Tab } from "@/types/tabs";
+import { BlurText } from "@/components/reactbits/BlurText";
 import {
   useReactTable,
   getCoreRowModel,
@@ -170,7 +171,7 @@ export function IssuesPanel({ onNavigate }: IssuesPanelProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Diagnostic Issues</CardTitle>
+        <CardTitle><BlurText text="Diagnostic Issues" /></CardTitle>
         <CardDescription className="flex gap-4">
           <span className="text-red-400">{errorCount} errors</span>
           <span className="text-yellow-400">{warningCount} warnings</span>
@@ -187,8 +188,14 @@ export function IssuesPanel({ onNavigate }: IssuesPanelProps) {
           />
         </div>
         {issues.length === 0 ? (
-          <div className="py-8 text-center text-muted-foreground">
-            No issues found
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="rounded-full bg-green-500/10 p-4 mb-4">
+              <AlertCircle className="h-8 w-8 text-green-500" />
+            </div>
+            <p className="text-lg font-medium text-foreground">All clear</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              No diagnostic issues found in your configuration.
+            </p>
           </div>
         ) : (
           <div className="rounded-md border" role="region" aria-label="Issues table">
@@ -214,7 +221,7 @@ export function IssuesPanel({ onNavigate }: IssuesPanelProps) {
               </thead>
               <tbody>
                 {table.getRowModel().rows.map((row) => (
-                  <tr key={row.id} className="border-b">
+                  <tr key={row.id} className="border-b transition-colors hover:bg-accent/50">
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} className="px-4 py-3">
                         {flexRender(
