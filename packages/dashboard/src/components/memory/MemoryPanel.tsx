@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useHistory, type Session } from "@/hooks/useHistory";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CardLoader } from "@/components/ui/card-loader";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ChevronRight, Calendar, MessageSquare, Wrench, Coins, Hash } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronRight, Calendar, MessageSquare, Wrench, Coins, Hash, ArrowUpDown } from "lucide-react";
 import { SessionTimeline } from "./SessionTimeline";
 
 function formatCost(cost: number): string {
@@ -26,13 +27,48 @@ function parseDate(dateStr: string): Date {
   return new Date(dateStr);
 }
 
+function pad(n: number): string {
+  return String(n).padStart(2, "0");
+}
+
 function formatDate(dateStr: string): string {
-  const date = parseDate(dateStr);
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  const d = parseDate(dateStr);
+  const yyyy = d.getFullYear();
+  const mm = pad(d.getMonth() + 1);
+  const dd = pad(d.getDate());
+  let hh = d.getHours();
+  const min = pad(d.getMinutes());
+  const sec = pad(d.getSeconds());
+  const ampm = hh >= 12 ? "PM" : "AM";
+  hh = hh % 12 || 12;
+  return `${yyyy}-${mm}-${dd}@${pad(hh)}:${min}:${sec} ${ampm}`;
+}
+
+enum SortField {
+  Date = "date",
+  Messages = "messages",
+  ToolCalls = "toolCalls",
+  Tokens = "tokens",
+  Cost = "cost",
+}
+
+type SortDir = "asc" | "desc";
+
+function sortSessions(sessions: Session[], field: SortField, dir: SortDir): Session[] {
+  const mult = dir === "asc" ? 1 : -1;
+  return [...sessions].sort((a, b) => {
+    switch (field) {
+      case SortField.Date:
+        return mult * (parseDate(a.startedAt).getTime() - parseDate(b.startedAt).getTime());
+      case SortField.Messages:
+        return mult * (a.messageCount - b.messageCount);
+      case SortField.ToolCalls:
+        return mult * (a.toolCalls.length - b.toolCalls.length);
+      case SortField.Tokens:
+        return mult * ((a.tokensIn + a.tokensOut) - (b.tokensIn + b.tokensOut));
+      case SortField.Cost:
+        return mult * (a.costUsd - b.costUsd);
+    }
   });
 }
 
@@ -157,8 +193,32 @@ function StatCard({ label, value, icon }: StatCardProps) {
   );
 }
 
+const SORT_OPTIONS: { field: SortField; label: string }[] = [
+  { field: SortField.Date, label: "Date" },
+  { field: SortField.Messages, label: "Messages" },
+  { field: SortField.ToolCalls, label: "Tool Calls" },
+  { field: SortField.Tokens, label: "Tokens" },
+  { field: SortField.Cost, label: "Cost" },
+];
+
 export function MemoryPanel() {
   const { data, isLoading, error } = useHistory(100);
+  const [sortField, setSortField] = useState<SortField>(SortField.Date);
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
+
+  const sorted = useMemo(() => {
+    if (!data) return [];
+    return sortSessions(data.sessions, sortField, sortDir);
+  }, [data, sortField, sortDir]);
+
+  function handleToggleSort(field: SortField) {
+    if (sortField === field) {
+      setSortDir(sortDir === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDir("desc");
+    }
+  }
 
   if (isLoading) {
     return <CardLoader />;
@@ -180,7 +240,7 @@ export function MemoryPanel() {
     );
   }
 
-  const { sessions, totals, dateRange } = data;
+  const { totals, dateRange } = data;
 
   return (
     <div className="space-y-6">
@@ -227,17 +287,33 @@ export function MemoryPanel() {
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Recent Sessions</CardTitle>
+          <div className="flex items-center gap-1">
+            {SORT_OPTIONS.map((opt) => (
+              <Button
+                key={opt.field}
+                variant={sortField === opt.field ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => handleToggleSort(opt.field)}
+                className="gap-1 text-xs"
+              >
+                {opt.label}
+                {sortField === opt.field && (
+                  <ArrowUpDown className="h-3 w-3" />
+                )}
+              </Button>
+            ))}
+          </div>
         </CardHeader>
         <CardContent className="p-0">
-          {sessions.length === 0 ? (
+          {sorted.length === 0 ? (
             <div className="px-4 py-8 text-center text-muted-foreground">
               No sessions found
             </div>
           ) : (
             <div className="max-h-[500px] overflow-y-auto">
-              {sessions.map((session) => (
+              {sorted.map((session) => (
                 <SessionRow key={session.id} session={session} />
               ))}
             </div>
