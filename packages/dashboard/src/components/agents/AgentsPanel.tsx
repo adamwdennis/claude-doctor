@@ -1,13 +1,15 @@
-import { useState } from "react";
 import { useAgents } from "@/hooks/useAgents";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CardLoader } from "@/components/ui/card-loader";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import { Bot, Search } from "lucide-react";
+import { Bot } from "lucide-react";
 import type { AgentInfo } from "@/lib/api";
+
+interface AgentsPanelProps {
+  search: string;
+}
 
 function groupByPlugin(agents: AgentInfo[]): Map<string, AgentInfo[]> {
   const grouped = new Map<string, AgentInfo[]>();
@@ -28,8 +30,7 @@ function matchesSearch(agent: AgentInfo, query: string): boolean {
   );
 }
 
-export function AgentsPanel() {
-  const [search, setSearch] = useState("");
+export function AgentsPanel({ search }: AgentsPanelProps) {
   const { agents, isLoading, error, toggleAgent, toggleSingleAgent, isToggling } =
     useAgents();
 
@@ -49,10 +50,6 @@ export function AgentsPanel() {
     ? agents.filter((a) => matchesSearch(a, search))
     : agents;
   const grouped = groupByPlugin(filtered);
-
-  function handleChangeSearch(e: React.ChangeEvent<HTMLInputElement>) {
-    setSearch(e.target.value);
-  }
 
   function handlePluginToggle(pluginFullName: string, pluginAgents: AgentInfo[]) {
     const allEnabled = pluginAgents.every((a) => a.agentEnabled);
@@ -93,18 +90,6 @@ export function AgentsPanel() {
         <p className="text-sm text-muted-foreground">
           {agents.length} agent(s) from {groupByPlugin(agents).size} plugin(s)
         </p>
-      </div>
-
-      <div className="sticky top-0 z-10 bg-background pb-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search agents..."
-            value={search}
-            onChange={handleChangeSearch}
-            className="pl-9"
-          />
-        </div>
       </div>
 
       {filtered.length === 0 ? (

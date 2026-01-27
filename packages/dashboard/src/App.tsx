@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Toaster } from "sonner";
@@ -19,6 +19,7 @@ export default function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("tab");
   const activeTab = isValidTab(tabParam) ? tabParam : DEFAULT_TAB;
+  const [search, setSearch] = useState("");
 
   const handleTabChange = useCallback(
     (tab: Tab) => {
@@ -29,6 +30,14 @@ export default function App() {
     },
     [setSearchParams]
   );
+
+  useEffect(() => {
+    setSearch("");
+  }, [activeTab]);
+
+  function handleChangeSearch(e: React.ChangeEvent<HTMLInputElement>) {
+    setSearch(e.target.value);
+  }
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -61,7 +70,7 @@ export default function App() {
       case Tab.Memory:
         return <MemoryPanel />;
       case Tab.Agents:
-        return <AgentsPanel />;
+        return <AgentsPanel search={search} />;
     }
   }
 
@@ -72,7 +81,7 @@ export default function App() {
         <div className="flex h-screen">
           <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
           <div className="flex flex-1 flex-col">
-            <Header />
+            <Header search={search} onSearchChange={handleChangeSearch} />
             <main className="flex-1 overflow-auto p-6">
               <AnimatePresence mode="wait">
                 <motion.div
