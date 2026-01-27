@@ -7,6 +7,8 @@ export enum Tab {
   Stats = "stats",
   Memory = "memory",
   Agents = "agents",
+  Context = "context",
+  Snapshots = "snapshots",
 }
 
 export const TABS = Object.values(Tab);

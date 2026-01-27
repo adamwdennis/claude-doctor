@@ -35,3 +35,20 @@ export interface SettingsConflict {
 		value: unknown;
 	}>;
 }
+
+// Effective Config (F2)
+export interface EffectiveConfigOverride {
+	source: SettingsSource;
+	value: unknown;
+}
+
+export interface EffectiveConfigEntry {
+	key: string;
+	value: unknown;
+	source: SettingsSource;
+	overrides: EffectiveConfigOverride[];
+}
+
+export interface EffectiveConfig {
+	entries: EffectiveConfigEntry[];
+}

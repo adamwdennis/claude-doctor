@@ -42,6 +42,13 @@ export interface DiagnosticIssue {
   message: string;
   file?: string;
   suggestion?: string;
+  fix?: DiagnosticIssueFix;
+}
+
+export interface DiagnosticIssueFix {
+  type: string;
+  label: string;
+  payload: Record<string, unknown>;
 }
 
 export enum FileTraceType {
@@ -118,6 +125,169 @@ export interface AgentsCollection {
   disabledCount: number;
 }
 
+// Context Budget (F1)
+export interface ContextSourceEntry {
+  source: string;
+  label: string;
+  tokenEstimate: number;
+  details?: string;
+}
+
+export interface ContextBudget {
+  sources: ContextSourceEntry[];
+  totalTokens: number;
+  modelLimit: number;
+  usagePercent: number;
+}
+
+// MCP Tools (F5)
+export interface ToolInventoryItem {
+  name: string;
+  server: string;
+  description: string;
+  inputSchema?: Record<string, unknown>;
+  tokenEstimate: number;
+}
+
+export interface McpToolsCollection {
+  tools: ToolInventoryItem[];
+  servers: string[];
+  totalTokens: number;
+  totalTools: number;
+}
+
+// Merge Preview (F3)
+export interface MergedInstructionsBlock {
+  source: string;
+  path: string;
+  content: string;
+  tokenEstimate: number;
+  startLine: number;
+  endLine: number;
+}
+
+export interface MergedInstructionsResult {
+  blocks: MergedInstructionsBlock[];
+  mergedContent: string;
+  totalTokens: number;
+  totalLines: number;
+}
+
+// Instructions Lint (F8)
+export interface InstructionsLintIssue {
+  severity: string;
+  message: string;
+  source: string;
+  line?: number;
+  suggestion?: string;
+  ruleId: string;
+}
+
+export interface InstructionsLintResult {
+  issues: InstructionsLintIssue[];
+  totalIssues: number;
+}
+
+// Permissions (F4)
+export interface PermissionRule {
+  pattern: string;
+  source: string;
+  sourcePath: string;
+  type: "allow" | "deny" | "ask";
+}
+
+export interface PermissionDebugResult {
+  query: string;
+  verdict: string;
+  matchedRule?: PermissionRule;
+  allRules: PermissionRule[];
+}
+
+// Hooks (F9)
+export interface HookEntry {
+  event: string;
+  command: string;
+  matcher?: string;
+  timeout?: number;
+  source: string;
+  sourcePath: string;
+}
+
+export interface HooksCollection {
+  hooks: HookEntry[];
+  totalHooks: number;
+}
+
+// Effective Config (F2)
+export interface EffectiveConfigEntry {
+  key: string;
+  value: unknown;
+  source: string;
+  overrides: { source: string; value: unknown }[];
+}
+
+export interface EffectiveConfig {
+  entries: EffectiveConfigEntry[];
+}
+
+// Snapshots (F7)
+export interface SnapshotMeta {
+  id: string;
+  name: string;
+  createdAt: string;
+  projectPath: string;
+}
+
+export interface SnapshotDiff {
+  left: SnapshotMeta;
+  right: SnapshotMeta;
+  entries: DiffEntry[];
+}
+
+export interface DiffEntry {
+  path: string;
+  changeType: "added" | "removed" | "changed";
+  oldValue?: unknown;
+  newValue?: unknown;
+}
+
+// Session Detail (F6)
+export interface HistoryEntry {
+  timestamp: string;
+  type: string;
+  sessionId?: string;
+  toolName?: string;
+  tokensIn?: number;
+  tokensOut?: number;
+  costUsd?: number;
+  message?: string;
+  model?: string;
+  cwd?: string;
+}
+
+export interface SessionDetail {
+  session: Session;
+  entries: HistoryEntry[];
+  entryCount: number;
+}
+
+// Cost Forecast (F11)
+export interface DailyCost {
+  date: string;
+  cost: number;
+  sessions: number;
+  tokens: number;
+}
+
+export interface CostForecast {
+  dailyAverage: number;
+  weeklyAverage: number;
+  monthlyProjection: number;
+  trend: "up" | "down" | "stable";
+  periodAnalyzedDays: number;
+  dataPoints: DailyCost[];
+}
+
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     headers: { "Content-Type": "application/json" },
@@ -138,6 +308,8 @@ export const api = {
         method: "POST",
         body: JSON.stringify(data),
       }),
+    effective: () =>
+      fetchJson<EffectiveConfig>(`${API_BASE}/settings/effective`),
   },
   mcp: {
     list: () => fetchJson<McpCollection>(`${API_BASE}/mcp`),
@@ -145,12 +317,15 @@ export const api = {
       fetchJson<McpCheckResult>(`${API_BASE}/mcp/check/${server}`, {
         method: "POST",
       }),
+    tools: () => fetchJson<McpToolsCollection>(`${API_BASE}/mcp/tools`),
   },
   issues: {
     list: () => fetchJson<DiagnosticIssue[]>(`${API_BASE}/issues`),
   },
   stats: {
     get: () => fetchJson<Record<string, unknown>>(`${API_BASE}/stats`),
+    forecast: (days = 30) =>
+      fetchJson<CostForecast>(`${API_BASE}/stats/forecast?days=${days}`),
   },
   fileTrace: {
     get: () => fetchJson<FileTraceCollection>(`${API_BASE}/file-trace`),
@@ -167,6 +342,8 @@ export const api = {
   history: {
     get: (limit = 100) =>
       fetchJson<HistoryCollection>(`${API_BASE}/history?limit=${limit}`),
+    getSession: (sessionId: string) =>
+      fetchJson<SessionDetail>(`${API_BASE}/history/${encodeURIComponent(sessionId)}`),
   },
   agents: {
     list: () => fetchJson<AgentsCollection>(`${API_BASE}/agents`),
@@ -186,5 +363,49 @@ export const api = {
           body: JSON.stringify({ agentId, enabled }),
         }
       ),
+  },
+  context: {
+    get: () => fetchJson<ContextBudget>(`${API_BASE}/context`),
+  },
+  instructions: {
+    merged: () => fetchJson<MergedInstructionsResult>(`${API_BASE}/instructions`),
+    lint: () => fetchJson<InstructionsLintResult>(`${API_BASE}/instructions/lint`),
+  },
+  permissions: {
+    summary: () => fetchJson<{ rules: PermissionRule[] }>(`${API_BASE}/permissions/summary`),
+    debug: (query: string) =>
+      fetchJson<PermissionDebugResult>(`${API_BASE}/permissions/debug`, {
+        method: "POST",
+        body: JSON.stringify({ query }),
+      }),
+  },
+  hooks: {
+    get: () => fetchJson<HooksCollection>(`${API_BASE}/hooks`),
+  },
+  snapshots: {
+    list: () => fetchJson<{ snapshots: SnapshotMeta[] }>(`${API_BASE}/snapshots`),
+    create: (name?: string) =>
+      fetchJson<SnapshotMeta>(`${API_BASE}/snapshots`, {
+        method: "POST",
+        body: JSON.stringify({ name }),
+      }),
+    get: (id: string) =>
+      fetchJson<{ meta: SnapshotMeta; report: unknown }>(`${API_BASE}/snapshots/${id}`),
+    delete: (id: string) =>
+      fetchJson<{ success: boolean }>(`${API_BASE}/snapshots/${id}`, {
+        method: "DELETE",
+      }),
+    diff: (leftId: string, rightId: string) =>
+      fetchJson<SnapshotDiff>(`${API_BASE}/snapshots/diff`, {
+        method: "POST",
+        body: JSON.stringify({ leftId, rightId }),
+      }),
+  },
+  fix: {
+    apply: (fixType: string, payload: Record<string, unknown>) =>
+      fetchJson<{ success: boolean }>(`${API_BASE}/fix`, {
+        method: "POST",
+        body: JSON.stringify({ fixType, payload }),
+      }),
   },
 };

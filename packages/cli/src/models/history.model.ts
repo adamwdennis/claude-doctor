@@ -47,3 +47,9 @@ export interface HistoryCollection {
 		last: string;
 	};
 }
+
+export interface SessionDetail {
+	session: Session;
+	entries: HistoryEntry[];
+	entryCount: number;
+}

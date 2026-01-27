@@ -11,6 +11,8 @@ import { IssuesPanel } from "@/components/issues/IssuesPanel";
 import { StatsPanel } from "@/components/stats/StatsPanel";
 import { MemoryPanel } from "@/components/memory/MemoryPanel";
 import { AgentsPanel } from "@/components/agents/AgentsPanel";
+import { ContextPanel } from "@/components/context/ContextPanel";
+import { SnapshotsPanel } from "@/components/snapshots/SnapshotsPanel";
 import { LiveUpdatesProvider } from "@/contexts/LiveUpdatesProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Tab, TABS, DEFAULT_TAB, isValidTab } from "@/types/tabs";
@@ -44,6 +46,10 @@ export default function App() {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return;
       }
+      if (e.key === "0" && TABS.length >= 10) {
+        handleTabChange(TABS[9]);
+        return;
+      }
       const num = parseInt(e.key, 10);
       if (num >= 1 && num <= TABS.length) {
         handleTabChange(TABS[num - 1]);
@@ -62,7 +68,7 @@ export default function App() {
       case Tab.Project:
         return <SettingsPanel layer="project-local" title="Project Settings" />;
       case Tab.Issues:
-        return <IssuesPanel />;
+        return <IssuesPanel onNavigate={handleTabChange} />;
       case Tab.Mcp:
         return <McpPanel />;
       case Tab.Stats:
@@ -71,6 +77,10 @@ export default function App() {
         return <MemoryPanel />;
       case Tab.Agents:
         return <AgentsPanel search={search} />;
+      case Tab.Context:
+        return <ContextPanel />;
+      case Tab.Snapshots:
+        return <SnapshotsPanel />;
     }
   }
 

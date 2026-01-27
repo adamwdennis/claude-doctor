@@ -9,7 +9,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CardLoader } from "@/components/ui/card-loader";
-import { AlertTriangle, AlertCircle, Info, FileText } from "lucide-react";
+import { AlertTriangle, AlertCircle, Info, FileText, Wrench } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useFix } from "@/hooks/useFix";
+import { Tab } from "@/types/tabs";
 import {
   useReactTable,
   getCoreRowModel,
@@ -41,56 +44,96 @@ const SEVERITY_CONFIG = {
   },
 };
 
-const columns: ColumnDef<DiagnosticIssue>[] = [
-  {
-    accessorKey: "severity",
-    header: "Severity",
-    cell: ({ row }) => {
-      const severity = row.getValue("severity") as DiagnosticIssue["severity"];
-      const config = SEVERITY_CONFIG[severity];
-      const Icon = config.icon;
-      return (
-        <Badge className={config.className}>
-          <Icon className="mr-1 h-3 w-3" />
-          {severity}
-        </Badge>
-      );
+function makeColumns(
+  onFix: (fixType: string, payload: Record<string, unknown>) => void,
+  onNavigate?: (tab: Tab) => void,
+  isApplying?: boolean,
+): ColumnDef<DiagnosticIssue>[] {
+  return [
+    {
+      accessorKey: "severity",
+      header: "Severity",
+      cell: ({ row }) => {
+        const severity = row.getValue("severity") as DiagnosticIssue["severity"];
+        const config = SEVERITY_CONFIG[severity];
+        const Icon = config.icon;
+        return (
+          <Badge className={config.className}>
+            <Icon className="mr-1 h-3 w-3" />
+            {severity}
+          </Badge>
+        );
+      },
     },
-  },
-  {
-    accessorKey: "category",
-    header: "Category",
-    cell: ({ row }) => (
-      <Badge variant="outline">{row.getValue("category")}</Badge>
-    ),
-  },
-  {
-    accessorKey: "message",
-    header: "Message",
-    cell: ({ row }) => (
-      <span className="text-sm">{row.getValue("message")}</span>
-    ),
-  },
-  {
-    accessorKey: "file",
-    header: "File",
-    cell: ({ row }) => {
-      const file = row.getValue("file") as string | undefined;
-      if (!file) return null;
-      return (
-        <span className="flex items-center gap-1 font-mono text-xs text-muted-foreground">
-          <FileText className="h-3 w-3" />
-          {file}
-        </span>
-      );
+    {
+      accessorKey: "category",
+      header: "Category",
+      cell: ({ row }) => (
+        <Badge variant="outline">{row.getValue("category")}</Badge>
+      ),
     },
-  },
-];
+    {
+      accessorKey: "message",
+      header: "Message",
+      cell: ({ row }) => (
+        <span className="text-sm">{row.getValue("message")}</span>
+      ),
+    },
+    {
+      accessorKey: "file",
+      header: "File",
+      cell: ({ row }) => {
+        const file = row.getValue("file") as string | undefined;
+        if (!file) return null;
+        return (
+          <span className="flex items-center gap-1 font-mono text-xs text-muted-foreground">
+            <FileText className="h-3 w-3" />
+            {file}
+          </span>
+        );
+      },
+    },
+    {
+      id: "action",
+      header: "Action",
+      cell: ({ row }) => {
+        const fix = row.original.fix;
+        if (!fix) return null;
+        function handleClickFix() {
+          if (!fix) return;
+          if (fix.type === "NavigateToTab" && onNavigate) {
+            const tab = fix.payload.tab as string;
+            onNavigate(tab as Tab);
+          } else {
+            onFix(fix.type, fix.payload);
+          }
+        }
+        return (
+          <Button variant="outline" size="sm" onClick={handleClickFix} disabled={isApplying}>
+            <Wrench className="mr-1 h-3 w-3" />
+            {fix.label}
+          </Button>
+        );
+      },
+    },
+  ];
+}
 
-export function IssuesPanel() {
+interface IssuesPanelProps {
+  onNavigate?: (tab: Tab) => void;
+}
+
+export function IssuesPanel({ onNavigate }: IssuesPanelProps) {
   const { issues, isLoading, error } = useIssues();
+  const { applyFix, isApplying } = useFix();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+
+  function handleFix(fixType: string, payload: Record<string, unknown>) {
+    applyFix({ fixType, payload });
+  }
+
+  const columns = makeColumns(handleFix, onNavigate, isApplying);
 
   const table = useReactTable({
     data: issues,

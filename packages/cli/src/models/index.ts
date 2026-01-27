@@ -7,3 +7,7 @@ export * from "./filetrace.model.js";
 export * from "./history.model.js";
 export * from "./agent.model.js";
 export * from "./settings.schema.js";
+export * from "./mcp-tools.model.js";
+export * from "./hooks.model.js";
+export * from "./context.model.js";
+export * from "./forecast.model.js";

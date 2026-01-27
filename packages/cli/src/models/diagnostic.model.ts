@@ -58,3 +58,109 @@ export enum OutputFormat {
 	Json = "json",
 	Html = "html",
 }
+
+// Merge Preview (F3)
+export interface MergedInstructionsBlock {
+	source: InstructionsSource;
+	path: string;
+	content: string;
+	tokenEstimate: number;
+	startLine: number;
+	endLine: number;
+}
+
+export interface MergedInstructionsResult {
+	blocks: MergedInstructionsBlock[];
+	mergedContent: string;
+	totalTokens: number;
+	totalLines: number;
+}
+
+// Instructions Linter (F8)
+export enum LintSeverity {
+	Error = "error",
+	Warning = "warning",
+	Info = "info",
+}
+
+export interface InstructionsLintIssue {
+	severity: LintSeverity;
+	message: string;
+	source: InstructionsSource;
+	line?: number;
+	suggestion?: string;
+	ruleId: string;
+}
+
+export interface InstructionsLintResult {
+	issues: InstructionsLintIssue[];
+	totalIssues: number;
+}
+
+// Permissions Debugger (F4)
+export enum PermissionVerdict {
+	Allowed = "allowed",
+	Denied = "denied",
+	Ask = "ask",
+	NoMatch = "no_match",
+}
+
+export interface PermissionRule {
+	pattern: string;
+	source: string;
+	sourcePath: string;
+	type: "allow" | "deny" | "ask";
+}
+
+export interface PermissionDebugResult {
+	query: string;
+	verdict: PermissionVerdict;
+	matchedRule?: PermissionRule;
+	allRules: PermissionRule[];
+}
+
+// Snapshots (F7)
+export interface SnapshotMeta {
+	id: string;
+	name: string;
+	createdAt: string;
+	projectPath: string;
+}
+
+export interface Snapshot {
+	meta: SnapshotMeta;
+	report: DiagnosticReport;
+}
+
+export enum DiffChangeType {
+	Added = "added",
+	Removed = "removed",
+	Changed = "changed",
+}
+
+export interface DiffEntry {
+	path: string;
+	changeType: DiffChangeType;
+	oldValue?: unknown;
+	newValue?: unknown;
+}
+
+export interface SnapshotDiff {
+	left: SnapshotMeta;
+	right: SnapshotMeta;
+	entries: DiffEntry[];
+}
+
+// Quick-Fix Actions (F10)
+export enum FixType {
+	EnableServer = "enable_server",
+	CreateFile = "create_file",
+	TogglePlugin = "toggle_plugin",
+	NavigateToTab = "navigate_to_tab",
+}
+
+export interface DiagnosticIssueFix {
+	type: FixType;
+	label: string;
+	payload: Record<string, unknown>;
+}

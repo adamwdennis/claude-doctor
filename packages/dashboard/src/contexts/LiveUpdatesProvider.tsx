@@ -39,12 +39,19 @@ export function LiveUpdatesProvider({ children }: { children: ReactNode }) {
           const filePath = data.filePath as string | undefined;
           if (data.type === "settings-changed") {
             queryClient.invalidateQueries({ queryKey: ["settings"] });
+            queryClient.invalidateQueries({ queryKey: ["context"] });
+            queryClient.invalidateQueries({ queryKey: ["permissions"] });
+            queryClient.invalidateQueries({ queryKey: ["hooks"] });
+            queryClient.invalidateQueries({ queryKey: ["effective-config"] });
             toast.info(`Settings updated: ${filePath}`, { duration: 3000 });
           } else if (data.type === "mcp-changed") {
             queryClient.invalidateQueries({ queryKey: ["mcp"] });
+            queryClient.invalidateQueries({ queryKey: ["context"] });
             toast.info(`MCP config updated: ${filePath}`, { duration: 3000 });
           } else if (data.type === "issues-changed") {
             queryClient.invalidateQueries({ queryKey: ["issues"] });
+            queryClient.invalidateQueries({ queryKey: ["context"] });
+            queryClient.invalidateQueries({ queryKey: ["instructions"] });
             toast.info(`Issues updated: ${filePath}`, { duration: 3000 });
           }
         } catch {

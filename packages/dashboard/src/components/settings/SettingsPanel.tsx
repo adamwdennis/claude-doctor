@@ -8,6 +8,7 @@ import { CardLoader } from "@/components/ui/card-loader";
 import { Spinner } from "@/components/ui/spinner";
 import { JsonEditor } from "./JsonEditor";
 import { SettingsFormTab } from "./SettingsFormTab";
+import { EffectiveConfigPanel } from "./EffectiveConfigPanel";
 import { Save, RotateCcw } from "lucide-react";
 
 interface SettingsPanelProps {
@@ -86,12 +87,16 @@ export function SettingsPanel({ layer, title }: SettingsPanelProps) {
           <TabsList>
             <TabsTrigger value="form">Form</TabsTrigger>
             <TabsTrigger value="json">JSON</TabsTrigger>
+            <TabsTrigger value="effective">Effective</TabsTrigger>
           </TabsList>
           <TabsContent value="form" className="mt-4">
             <SettingsFormTab data={currentData} onChange={handleChange} />
           </TabsContent>
           <TabsContent value="json" className="mt-4">
             <JsonEditor data={currentData} onChange={handleChange} />
+          </TabsContent>
+          <TabsContent value="effective" className="mt-4">
+            <EffectiveConfigPanel />
           </TabsContent>
         </Tabs>
         {data?.path && (

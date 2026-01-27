@@ -5,6 +5,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CardLoader } from "@/components/ui/card-loader";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronRight, Calendar, MessageSquare, Wrench, Coins, Hash } from "lucide-react";
+import { SessionTimeline } from "./SessionTimeline";
 
 function formatCost(cost: number): string {
   if (cost < 0.01) return `$${cost.toFixed(4)}`;
@@ -129,6 +130,7 @@ function SessionRow({ session }: SessionRowProps) {
               ))}
             </div>
           )}
+          <SessionTimeline sessionId={session.id} />
         </div>
       )}
     </div>

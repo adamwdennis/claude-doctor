@@ -1,7 +1,9 @@
 import {
 	type DiagnosticIssue,
+	type DiagnosticIssueFix,
 	type InstructionsCollection,
 	IssueSeverity,
+	FixType,
 	type McpCollection,
 	McpStatus,
 	PluginStatus,
@@ -10,14 +12,18 @@ import {
 	type StatsCollection,
 } from "../models/index.js";
 
+export interface DiagnosticIssueWithFix extends DiagnosticIssue {
+	fix?: DiagnosticIssueFix;
+}
+
 export function analyzeIssues(
 	settings: SettingsHierarchy,
 	mcp: McpCollection,
 	plugins: PluginsCollection,
 	instructions: InstructionsCollection,
 	stats: StatsCollection,
-): DiagnosticIssue[] {
-	const issues: DiagnosticIssue[] = [];
+): DiagnosticIssueWithFix[] {
+	const issues: DiagnosticIssueWithFix[] = [];
 
 	// Check for missing user settings
 	const userLayer = settings.layers.find((l) => l.source === "user");
@@ -27,6 +33,11 @@ export function analyzeIssues(
 			message: "No user settings file found",
 			category: "settings",
 			path: userLayer.path ?? undefined,
+			fix: {
+				type: FixType.CreateFile,
+				label: "Create user settings",
+				payload: { fileType: "settings" },
+			},
 		});
 	}
 
@@ -37,6 +48,11 @@ export function analyzeIssues(
 			severity: IssueSeverity.Warning,
 			message: "No project-level CLAUDE.md found",
 			category: "instructions",
+			fix: {
+				type: FixType.CreateFile,
+				label: "Create CLAUDE.md",
+				payload: { fileType: "claude-md" },
+			},
 		});
 	}
 
@@ -47,6 +63,11 @@ export function analyzeIssues(
 			severity: IssueSeverity.Info,
 			message: `${disabledServers.length} MCP server(s) disabled`,
 			category: "mcp",
+			fix: {
+				type: FixType.NavigateToTab,
+				label: "View MCP servers",
+				payload: { tab: "mcp" },
+			},
 		});
 	}
 
@@ -67,6 +88,11 @@ export function analyzeIssues(
 			severity: IssueSeverity.Info,
 			message: `${disabledPlugins.length} plugin(s) disabled`,
 			category: "plugins",
+			fix: {
+				type: FixType.NavigateToTab,
+				label: "View agents",
+				payload: { tab: "agents" },
+			},
 		});
 	}
 

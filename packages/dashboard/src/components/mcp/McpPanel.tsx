@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMcp } from "@/hooks/useMcp";
 import {
   Card,
@@ -7,14 +7,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CardLoader } from "@/components/ui/card-loader";
 import { Spinner } from "@/components/ui/spinner";
 import { CheckCircle2, XCircle, RefreshCw } from "lucide-react";
+import { McpToolsPanel } from "./McpToolsPanel";
 
 export function McpPanel() {
+  const [activeTab, setActiveTab] = useState("servers");
   const {
     servers,
     isLoading,
@@ -51,6 +54,12 @@ export function McpPanel() {
 
   return (
     <div className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="servers">Servers</TabsTrigger>
+          <TabsTrigger value="tools">Tools</TabsTrigger>
+        </TabsList>
+        <TabsContent value="servers">
       <Card>
         <CardHeader>
           <CardTitle>MCP Servers</CardTitle>
@@ -153,6 +162,11 @@ export function McpPanel() {
           )}
         </CardContent>
       </Card>
+        </TabsContent>
+        <TabsContent value="tools">
+          <McpToolsPanel />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

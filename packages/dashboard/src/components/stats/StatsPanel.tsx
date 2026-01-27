@@ -1,4 +1,5 @@
 import { useStats } from "@/hooks/useStats";
+import { CostForecastCard } from "./CostForecast";
 import {
   Card,
   CardContent,
@@ -184,6 +185,7 @@ export function StatsPanel() {
           </div>
         </CardContent>
       </Card>
+      <CostForecastCard />
     </div>
   );
 }

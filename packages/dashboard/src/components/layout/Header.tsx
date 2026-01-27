@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { LiveUpdatesIndicator } from "./LiveUpdatesIndicator";
+import { ExportButton } from "@/components/home/ExportButton";
 
 interface HeaderProps {
   search: string;
@@ -38,6 +39,7 @@ export function Header({ search, onSearchChange }: HeaderProps) {
       </div>
       <div className="flex items-center gap-2">
         <LiveUpdatesIndicator />
+        <ExportButton />
         <Button
           variant="ghost"
           size="icon"
