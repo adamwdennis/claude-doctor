@@ -108,6 +108,8 @@ export interface AgentInfo {
   model: string;
   filePath: string;
   enabled: boolean;
+  agentId: string;
+  agentEnabled: boolean;
 }
 
 export interface AgentsCollection {
@@ -174,6 +176,14 @@ export const api = {
         {
           method: "POST",
           body: JSON.stringify({ pluginFullName, enabled }),
+        }
+      ),
+    toggleAgent: (agentId: string, enabled: boolean) =>
+      fetchJson<{ success: boolean; agentId: string; enabled: boolean }>(
+        `${API_BASE}/agents/toggle-agent`,
+        {
+          method: "POST",
+          body: JSON.stringify({ agentId, enabled }),
         }
       ),
   },
