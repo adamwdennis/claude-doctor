@@ -13,6 +13,7 @@ import { MemoryPanel } from "@/components/memory/MemoryPanel";
 import { AgentsPanel } from "@/components/agents/AgentsPanel";
 import { ContextPanel } from "@/components/context/ContextPanel";
 import { SnapshotsPanel } from "@/components/snapshots/SnapshotsPanel";
+import { FilesPage } from "@/components/filetrace/FilesPage";
 import { LiveUpdatesProvider } from "@/contexts/LiveUpdatesProvider";
 import { useSidebarCollapse } from "@/hooks/useSidebarCollapse";
 import { Tab, TABS, DEFAULT_TAB, isValidTab } from "@/types/tabs";
@@ -65,6 +66,8 @@ export default function App() {
         return <SettingsPanel layer="user" title="User Settings" />;
       case Tab.Project:
         return <SettingsPanel layer="project-local" title="Project Settings" />;
+      case Tab.Files:
+        return <FilesPage />;
       case Tab.Issues:
         return <IssuesPanel onNavigate={handleTabChange} />;
       case Tab.Mcp:

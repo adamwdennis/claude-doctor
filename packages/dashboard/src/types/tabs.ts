@@ -2,6 +2,7 @@ export enum Tab {
   Home = "home",
   User = "user",
   Project = "project",
+  Files = "files",
   Issues = "issues",
   Mcp = "mcp",
   Memory = "memory",

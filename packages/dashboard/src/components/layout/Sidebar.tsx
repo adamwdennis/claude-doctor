@@ -4,6 +4,7 @@ import {
   House,
   User,
   FolderGit2,
+  FileSearch,
   AlertTriangle,
   Plug,
   Brain,
@@ -14,7 +15,6 @@ import {
   PanelLeftOpen,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { FileTracePanel } from "@/components/filetrace/FileTracePanel";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 interface SidebarProps {
@@ -28,6 +28,7 @@ const NAV_ITEMS: { id: Tab; label: string; icon: typeof User }[] = [
   { id: Tab.Home, label: "Home", icon: House },
   { id: Tab.User, label: "User", icon: User },
   { id: Tab.Project, label: "Project", icon: FolderGit2 },
+  { id: Tab.Files, label: "Files", icon: FileSearch },
   { id: Tab.Issues, label: "Issues", icon: AlertTriangle },
   { id: Tab.Mcp, label: "MCP", icon: Plug },
   { id: Tab.Memory, label: "Memory", icon: Brain },
@@ -143,7 +144,6 @@ export function Sidebar({ activeTab, onTabChange, collapsed, onToggle }: Sidebar
         })}
       </nav>
       <div className="mt-auto">
-        {!collapsed && <FileTracePanel />}
         <div className="border-t p-2 flex items-center justify-center">
           <button
             onClick={onToggle}
